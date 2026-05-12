@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Office Quiz — Leaderboard</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:system-ui,sans-serif;background:#0f172a;color:#f1f5f9;min-height:100vh;display:grid;grid-template-columns:1fr 340px;gap:0;}
+
+  /* LEFT — leaderboard */
+  #left{padding:2.5rem 2rem;display:flex;flex-direction:column;}
+  #left h1{font-size:32px;font-weight:700;margin-bottom:0.25rem;display:flex;align-items:center;gap:12px;}
+  #week-label{font-size:13px;color:#64748b;margin-bottom:2rem;}
+  .tab-bar{display:flex;gap:4px;margin-bottom:1.5rem;border-bottom:1px solid #1e293b;}
+  .tab{padding:8px 20px;font-size:14px;color:#64748b;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
+  .tab.active{color:#60a5fa;border-bottom-color:#60a5fa;font-weight:600;}
+  #lb-list{flex:1;}
+  .lb-row{display:flex;align-items:center;gap:14px;padding:12px 10px;border-radius:12px;margin-bottom:6px;transition:background 0.2s;}
+  .lb-row:hover{background:#1e293b;}
+  .lb-row.top1{background:#1c1a0f;border:1px solid #854d0e;}
+  .lb-row.top2{background:#111827;border:1px solid #374151;}
+  .lb-row.top3{background:#1a0f0f;border:1px solid #7f1d1d;}
+  .rank{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;}
+  .lb-name{flex:1;font-size:18px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .lb-score{font-size:22px;font-weight:700;color:#f1f5f9;}
+  .lb-sub{font-size:13px;color:#475569;}
+  #lb-empty{font-size:15px;color:#475569;text-align:center;padding:4rem 0;}
+  #lb-updated{font-size:12px;color:#334155;margin-top:auto;padding-top:1rem;}
+
+  /* RIGHT — QR + info */
+  #right{background:#0b1120;border-left:1px solid #1e293b;padding:2.5rem 2rem;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+  #right h2{font-size:20px;font-weight:600;margin-bottom:0.5rem;}
+  #right p{font-size:13px;color:#64748b;line-height:1.7;margin-bottom:1.5rem;}
+  #qr-img{width:200px;height:200px;border-radius:16px;border:3px solid #1e293b;margin-bottom:1.5rem;background:#fff;padding:8px;}
+  #quiz-url{font-size:12px;color:#60a5fa;word-break:break-all;background:#1e293b;padding:8px 12px;border-radius:8px;margin-bottom:2rem;}
+  .stat{background:#1e293b;border-radius:12px;padding:0.75rem 1.25rem;margin-bottom:0.75rem;width:100%;text-align:left;}
+  .stat-val{font-size:20px;font-weight:700;}
+  .stat-lbl{font-size:11px;color:#64748b;}
+  #live-dot{display:inline-block;width:8px;height:8px;background:#22c55e;border-radius:50%;margin-right:6px;animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+</style>
+</head>
+<body>
+
+<!-- LEFT: LEADERBOARD -->
+<div id="left">
+  <h1>🏆 Leaderboard</h1>
+  <div id="week-label"></div>
+  <div class="tab-bar">
+    <div class="tab active" id="tab-week" onclick="switchTab('week')">This week</div>
+    <div class="tab" id="tab-all" onclick="switchTab('all')">All time</div>
+  </div>
+  <div id="lb-list">
+    <div id="lb-empty" style="display:none;">No scores yet this week.<br>Be the first to play!</div>
+    <div id="lb-rows"></div>
+  </div>
+  <div id="lb-updated"><span id="live-dot"></span> Live — refreshes every 15s</div>
+</div>
+
+<!-- RIGHT: QR + stats -->
+<div id="right">
+  <h2>Scan to play!</h2>
+  <p>Open the quiz on your phone,<br>answer 10 questions and<br>claim your spot on the board.</p>
+
+  <!-- QR code — generated from quiz URL -->
+  <img id="qr-img" src="" alt="QR code to quiz"/>
+  <div id="quiz-url">Loading URL…</div>
+
+  <div class="stat">
+    <div class="stat-val" id="stat-players">—</div>
+    <div class="stat-lbl">Players this week</div>
+  </div>
+  <div class="stat">
+    <div class="stat-val" id="stat-top">—</div>
+    <div class="stat-lbl">Top score this week</div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ───────────────────────────────────────────────────
+// Set this to the URL where quiz.html is hosted
+var QUIZ_URL = 'https://YOURNAME.github.io/office-quiz/quiz.html';
+// ─────────────────────────────────────────────────────────────
+
+var DB_PREFIX = 'quizapp_'; // must match quiz.html
+function dbKey(k){return DB_PREFIX+k;}
+function lsGet(k){try{var v=localStorage.getItem(dbKey(k));return v?JSON.parse(v):null;}catch(e){return null;}}
+
+function getWeekKey(){var n=new Date(),j=new Date(n.getFullYear(),0,1),w=Math.ceil(((n-j)/86400000+j.getDay()+1)/7);return 'w'+n.getFullYear()+'-'+w;}
+function getWeekLabel(){var n=new Date(),d=new Date(n);d.setDate(d.getDate()-d.getDay()+1);var e=new Date(d);e.setDate(e.getDate()+6);return 'Week of '+d.toLocaleDateString('en-GB',{day:'numeric',month:'long'})+' – '+e.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});}
+
+var currentTab='week';
+function switchTab(t){
+  currentTab=t;
+  document.getElementById('tab-week').classList.toggle('active',t==='week');
+  document.getElementById('tab-all').classList.toggle('active',t==='all');
+  renderLB();
+}
+
+function renderLB(){
+  var wk=getWeekKey();
+  document.getElementById('week-label').textContent=currentTab==='week'?getWeekLabel():'All-time best scores';
+  var data=currentTab==='week'?lsGet('lb_week_'+wk):lsGet('lb_all');
+  var rows=document.getElementById('lb-rows');
+  var empty=document.getElementById('lb-empty');
+  if(!data||Object.keys(data).length===0){rows.innerHTML='';empty.style.display='block';document.getElementById('stat-players').textContent='0';document.getElementById('stat-top').textContent='—';return;}
+  empty.style.display='none';
+  var entries=Object.keys(data).map(function(n){return{name:n,score:data[n]};}).sort(function(a,b){return b.score-a.score;});
+  if(currentTab==='week'){document.getElementById('stat-players').textContent=entries.length;document.getElementById('stat-top').textContent=entries[0].score+' / 10';}
+  var medals=['🥇','🥈','🥉'];
+  var rowClasses=['top1','top2','top3'];
+  var html='';
+  for(var i=0;i<entries.length;i++){
+    var e=entries[i];
+    var rc=i<3?rowClasses[i]:'';
+    var med=i<3?medals[i]:'#'+(i+1);
+    html+='<div class="lb-row '+rc+'">';
+    html+='<div class="rank">'+med+'</div>';
+    html+='<div class="lb-name">'+e.name+'</div>';
+    html+='<div class="lb-score">'+e.score+' <span class="lb-sub">/ 10</span></div>';
+    html+='</div>';
+  }
+  rows.innerHTML=html;
+}
+
+// ── QR CODE via free API ──────────────────────────────────────
+function setupQR(){
+  var url=QUIZ_URL;
+  var qrSrc='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(url);
+  document.getElementById('qr-img').src=qrSrc;
+  document.getElementById('quiz-url').textContent=url;
+}
+
+// ── Init ──────────────────────────────────────────────────────
+setupQR();
+renderLB();
+setInterval(renderLB, 15000);
+</script>
+</body>
+</html>

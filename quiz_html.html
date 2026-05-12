@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Office Quiz</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:system-ui,sans-serif;background:#0f172a;color:#f1f5f9;min-height:100vh;padding:1.5rem;}
+  .card{background:#1e293b;border:1px solid #334155;border-radius:16px;padding:1.5rem;margin-bottom:1rem;}
+  h1{font-size:22px;font-weight:600;margin-bottom:0.25rem;}
+  p{font-size:14px;color:#94a3b8;line-height:1.6;}
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;font-size:15px;font-weight:500;border:none;border-radius:12px;cursor:pointer;margin-top:10px;}
+  .btn-blue{background:#3b82f6;color:#fff;}
+  .btn-blue:hover{background:#2563eb;}
+  .btn-gray{background:#1e293b;color:#f1f5f9;border:1px solid #334155;}
+  .btn-gray:hover{background:#334155;}
+  .inp{width:100%;padding:12px 14px;font-size:15px;border:1px solid #334155;border-radius:12px;background:#0f172a;color:#f1f5f9;outline:none;margin-bottom:4px;}
+  .inp:focus{border-color:#3b82f6;}
+  .screen{display:none;}
+  .screen.active{display:block;}
+  .badge{display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;margin-bottom:1rem;}
+  .tbar{height:5px;background:#334155;border-radius:3px;margin-bottom:1rem;overflow:hidden;}
+  .tfill{height:100%;background:#3b82f6;border-radius:3px;transition:width 1s linear;}
+  .mc-btn{width:100%;text-align:left;padding:11px 14px;font-size:14px;border:1px solid #334155;border-radius:10px;background:#0f172a;color:#f1f5f9;cursor:pointer;margin-bottom:8px;}
+  .mc-btn:hover:not(:disabled){border-color:#64748b;}
+  .mc-btn.ok{background:#14532d;border-color:#16a34a;color:#86efac;}
+  .mc-btn.no{background:#450a0a;border-color:#dc2626;color:#fca5a5;}
+  .mc-btn:disabled{cursor:default;}
+  .oi{width:100%;padding:11px 14px;font-size:14px;border:1px solid #334155;border-radius:10px;background:#0f172a;color:#f1f5f9;margin-top:0.75rem;outline:none;}
+  .fb{margin-top:0.75rem;padding:10px 14px;border-radius:10px;font-size:14px;line-height:1.5;}
+  .fb.ok{background:#14532d;color:#86efac;}
+  .fb.no{background:#450a0a;color:#fca5a5;}
+  .score-big{font-size:56px;font-weight:700;text-align:center;margin:1rem 0;}
+  .met{background:#0f172a;border-radius:10px;padding:1rem;text-align:center;flex:1;}
+  .mv{font-size:22px;font-weight:600;}
+  .ml{font-size:11px;color:#64748b;margin-top:4px;}
+  .err{color:#f87171;font-size:13px;margin-top:6px;display:none;}
+</style>
+</head>
+<body>
+
+<!-- NAME -->
+<div class="screen active" id="s-name">
+  <div class="card" style="text-align:center;padding:2rem 1.5rem;">
+    <div style="font-size:40px;margin-bottom:0.75rem;">🧠</div>
+    <h1>Office Knowledge Quiz</h1>
+    <p style="margin:0.5rem 0 1.5rem;">Enter your name to play and compete on the leaderboard!</p>
+    <input class="inp" id="nameInp" type="text" placeholder="Your name…" maxlength="30"/>
+    <div class="err" id="name-err">Please enter your name first.</div>
+    <button class="btn btn-blue" onclick="goStart()">▶ Start quiz</button>
+  </div>
+</div>
+
+<!-- QUESTION -->
+<div class="screen" id="s-q">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;">
+    <span id="qcnt" style="font-size:12px;color:#64748b;"></span>
+    <span class="badge" id="qcat" style="background:#1e3a5f;color:#93c5fd;"></span>
+  </div>
+  <div class="tbar"><div class="tfill" id="tfill" style="width:100%"></div></div>
+  <div class="card">
+    <p id="qtxt" style="font-size:16px;font-weight:500;color:#f1f5f9;margin-bottom:0.5rem;"></p>
+    <div id="qarea"></div>
+    <div id="qfb" class="fb" style="display:none;"></div>
+  </div>
+  <div id="qnext" style="display:none;">
+    <button class="btn btn-gray" onclick="nextQ()">Next →</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="s-res">
+  <div class="card" style="text-align:center;">
+    <p style="font-size:14px;color:#94a3b8;margin-bottom:0.25rem;">Well done, <span id="res-name" style="color:#f1f5f9;font-weight:600;"></span>!</p>
+    <div class="score-big" id="fscore"></div>
+    <div style="display:flex;gap:8px;margin-bottom:1rem;">
+      <div class="met"><div class="mv" id="rc"></div><div class="ml">Correct</div></div>
+      <div class="met"><div class="mv" id="rw"></div><div class="ml">Wrong</div></div>
+      <div class="met"><div class="mv" id="rv"></div><div class="ml">Rating</div></div>
+    </div>
+    <div id="save-status" style="font-size:13px;color:#64748b;margin-bottom:1rem;"></div>
+    <button class="btn btn-blue" onclick="playAgain()">🔄 Play again</button>
+    <button class="btn btn-gray" onclick="newPlayer()" style="margin-top:8px;">👤 New player</button>
+  </div>
+</div>
+
+<script>
+var BANK=[
+  {cat:"Science",type:"mc",q:"What is the chemical symbol for gold?",opts:["A. Go","B. Gd","C. Au","D. Ag"],ans:"C",exp:"Au comes from the Latin 'aurum'."},
+  {cat:"Science",type:"mc",q:"How many bones are in the adult human body?",opts:["A. 206","B. 215","C. 198","D. 223"],ans:"A",exp:"Adults have 206 bones."},
+  {cat:"Science",type:"open",q:"What planet is known as the Red Planet?",ans:"mars",alt:[],exp:"Mars gets its red colour from iron oxide."},
+  {cat:"Science",type:"open",q:"What is the powerhouse of the cell?",ans:"mitochondria",alt:["mitochondrion"],exp:"Mitochondria produce ATP."},
+  {cat:"Science",type:"mc",q:"What gas do plants absorb during photosynthesis?",opts:["A. Oxygen","B. Nitrogen","C. Carbon dioxide","D. Hydrogen"],ans:"C",exp:"Plants convert CO₂ into glucose."},
+  {cat:"Science",type:"mc",q:"What is the approximate speed of light?",opts:["A. 300,000 km/s","B. 150,000 km/s","C. 450,000 km/s","D. 200,000 km/s"],ans:"A",exp:"~299,792 km/s in a vacuum."},
+  {cat:"History",type:"mc",q:"In which year did World War II end?",opts:["A. 1943","B. 1944","C. 1945","D. 1946"],ans:"C",exp:"Germany May, Japan September 1945."},
+  {cat:"History",type:"mc",q:"Who was the first person to walk on the Moon?",opts:["A. Buzz Aldrin","B. Yuri Gagarin","C. Neil Armstrong","D. John Glenn"],ans:"C",exp:"Neil Armstrong, July 20, 1969."},
+  {cat:"History",type:"open",q:"In which city was the Titanic built?",ans:"belfast",alt:[],exp:"Harland and Wolff shipyard, Belfast."},
+  {cat:"History",type:"open",q:"Who painted the Mona Lisa?",ans:"leonardo da vinci",alt:["da vinci","leonardo"],exp:"Leonardo da Vinci, approx. 1503–1519."},
+  {cat:"Geography",type:"mc",q:"What is the capital of Australia?",opts:["A. Sydney","B. Melbourne","C. Brisbane","D. Canberra"],ans:"D",exp:"Canberra, capital since 1913."},
+  {cat:"Geography",type:"mc",q:"Which is the longest river in the world?",opts:["A. Amazon","B. Yangtze","C. Nile","D. Mississippi"],ans:"C",exp:"The Nile, ~6,650 km."},
+  {cat:"Geography",type:"open",q:"What is the smallest country in the world?",ans:"vatican city",alt:["vatican","holy see"],exp:"Vatican City, 0.44 km²."},
+  {cat:"Geography",type:"open",q:"On which continent is the Sahara Desert?",ans:"africa",alt:[],exp:"Spans 11 countries in North Africa."},
+  {cat:"Sport",type:"mc",q:"How many players are on a soccer team on the field?",opts:["A. 9","B. 10","C. 11","D. 12"],ans:"C",exp:"11 players including the goalkeeper."},
+  {cat:"Sport",type:"mc",q:"Which country has won the most FIFA World Cups?",opts:["A. Germany","B. Argentina","C. Italy","D. Brazil"],ans:"D",exp:"Brazil, five times."},
+  {cat:"Sport",type:"open",q:"How many Grand Slam tennis tournaments are there per year?",ans:"4",alt:["four"],exp:"Australian, French, Wimbledon, US Open."},
+  {cat:"Music",type:"mc",q:"How many strings does a standard guitar have?",opts:["A. 4","B. 5","C. 6","D. 7"],ans:"C",exp:"6 strings, tuned E-A-D-G-B-E."},
+  {cat:"Music",type:"open",q:"Which band released the album 'Abbey Road'?",ans:"the beatles",alt:["beatles"],exp:"The Beatles, September 1969."},
+  {cat:"Film",type:"mc",q:"Who directed 'Jurassic Park' (1993)?",opts:["A. James Cameron","B. George Lucas","C. Steven Spielberg","D. Ridley Scott"],ans:"C",exp:"Steven Spielberg, June 1993."},
+  {cat:"Film",type:"open",q:"What animated film features a clownfish named Nemo?",ans:"finding nemo",alt:["nemo"],exp:"Finding Nemo, Pixar 2003."},
+  {cat:"Film",type:"mc",q:"Who played Iron Man in the MCU?",opts:["A. Chris Evans","B. Chris Hemsworth","C. Mark Ruffalo","D. Robert Downey Jr."],ans:"D",exp:"Robert Downey Jr., 2008–2019."},
+  {cat:"Food",type:"mc",q:"Which country is the origin of sushi?",opts:["A. China","B. Korea","C. Japan","D. Thailand"],ans:"C",exp:"Sushi originated in Japan."},
+  {cat:"Food",type:"open",q:"What is the main ingredient in guacamole?",ans:"avocado",alt:["avocados"],exp:"Mashed ripe avocados."},
+  {cat:"Literature",type:"mc",q:"Who wrote '1984'?",opts:["A. Aldous Huxley","B. George Orwell","C. Ray Bradbury","D. H.G. Wells"],ans:"B",exp:"George Orwell, 1949."},
+  {cat:"Literature",type:"open",q:"What school does Harry Potter attend?",ans:"hogwarts",alt:[],exp:"Hogwarts School of Witchcraft and Wizardry."},
+  {cat:"Technology",type:"mc",q:"What does HTTP stand for?",opts:["A. HyperText Transfer Protocol","B. High Transfer Text Program","C. Hyper Terminal Transfer Process","D. HyperText Transmission Path"],ans:"A",exp:"Foundation of web communication."},
+  {cat:"Technology",type:"open",q:"What does CPU stand for?",ans:"central processing unit",alt:["central processor unit"],exp:"The main component executing instructions."},
+  {cat:"Technology",type:"mc",q:"Which company created Android?",opts:["A. Apple","B. Microsoft","C. Google","D. Samsung"],ans:"C",exp:"Google acquired Android Inc. in 2005."},
+  {cat:"Nature",type:"mc",q:"What is the largest mammal in the world?",opts:["A. African Elephant","B. Blue Whale","C. Giant Squid","D. Sperm Whale"],ans:"B",exp:"Blue whale, up to 30m and 180 tonnes."},
+  {cat:"Nature",type:"open",q:"What is the hardest natural substance on Earth?",ans:"diamond",alt:[],exp:"Diamond scores 10 on the Mohs scale."},
+  {cat:"Nature",type:"mc",q:"How many legs does a spider have?",opts:["A. 6","B. 8","C. 10","D. 12"],ans:"B",exp:"Spiders are arachnids with 8 legs."},
+  {cat:"Maths",type:"mc",q:"What is the square root of 144?",opts:["A. 11","B. 12","C. 13","D. 14"],ans:"B",exp:"12 × 12 = 144."},
+  {cat:"Maths",type:"open",q:"How many sides does a hexagon have?",ans:"6",alt:["six"],exp:"6 sides and 6 angles."},
+  {cat:"General",type:"mc",q:"How many continents are there?",opts:["A. 5","B. 6","C. 7","D. 8"],ans:"C",exp:"Africa, Antarctica, Asia, Australia, Europe, N+S America."},
+  {cat:"General",type:"open",q:"How many hours are in a week?",ans:"168",alt:[],exp:"7 × 24 = 168."},
+  {cat:"General",type:"mc",q:"What colour is a giraffe's tongue?",opts:["A. Pink","B. Red","C. Purple-black","D. Grey"],ans:"C",exp:"Dark purplish-black for UV protection."}
+];
+
+var qs=[],cur=0,sc=0,hist=[],tiv=null,tl=0,done=false,playerName='';
+
+// ── Storage helpers ──────────────────────────────────────────
+var DB_PREFIX='quizapp_'; // change this to match screen.html
+function dbKey(k){return DB_PREFIX+k;}
+function lsSet(k,v){try{localStorage.setItem(dbKey(k),JSON.stringify(v));}catch(e){}}
+function lsGet(k){try{var v=localStorage.getItem(dbKey(k));return v?JSON.parse(v):null;}catch(e){return null;}}
+
+function getWeekKey(){var n=new Date(),j=new Date(n.getFullYear(),0,1),w=Math.ceil(((n-j)/86400000+j.getDay()+1)/7);return 'w'+n.getFullYear()+'-'+w;}
+
+function show(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById(id).classList.add('active');}
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+
+function goStart(){
+  var n=document.getElementById('nameInp').value.trim();
+  if(!n){document.getElementById('name-err').style.display='block';return;}
+  document.getElementById('name-err').style.display='none';
+  playerName=n;startQuiz();
+}
+document.getElementById('nameInp').addEventListener('keydown',function(e){if(e.key==='Enter')goStart();});
+
+function startQuiz(){qs=shuffle(BANK.slice()).slice(0,10);cur=0;sc=0;hist=[];showQ();}
+
+function showQ(){
+  show('s-q');done=false;
+  var q=qs[cur];
+  document.getElementById('qcnt').textContent='Q '+(cur+1)+' / 10';
+  document.getElementById('qcat').textContent=q.cat;
+  document.getElementById('qtxt').textContent=q.q;
+  document.getElementById('qfb').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  var area=document.getElementById('qarea');
+  if(q.type==='mc'){
+    var h='';
+    for(var i=0;i<q.opts.length;i++) h+='<button class="mc-btn" data-opt="'+q.opts[i].charAt(0)+'" onclick="submitMC(\''+q.opts[i].charAt(0)+'\')">'+q.opts[i]+'</button>';
+    area.innerHTML=h;
+  } else {
+    area.innerHTML='<input class="oi" id="oi" type="text" placeholder="Type your answer…" autocomplete="off"><br><button class="btn btn-blue" style="margin-top:10px;" onclick="submitOpen()">✓ Submit</button>';
+    var inp=document.getElementById('oi');
+    inp.onkeydown=function(e){if(e.key==='Enter')submitOpen();};
+    setTimeout(function(){inp.focus();},50);
+  }
+  startTimer(q.type==='open'?30:20);
+}
+
+function startTimer(sec){
+  clearInterval(tiv);tl=sec;
+  var f=document.getElementById('tfill');
+  f.style.transition='none';f.style.width='100%';
+  setTimeout(function(){f.style.transition='width '+sec+'s linear';f.style.width='0%';},50);
+  tiv=setInterval(function(){tl--;if(tl<=0){clearInterval(tiv);if(!done)timeOut();}},1000);
+}
+
+function timeOut(){done=true;var q=qs[cur];showFB(false,"Time's up! Answer: "+q.ans,q.exp);disableAll();document.getElementById('qnext').style.display='block';hist.push({ok:false});}
+function submitMC(l){
+  if(done)return;done=true;clearInterval(tiv);
+  var q=qs[cur],ok=(l===q.ans);
+  document.querySelectorAll('.mc-btn').forEach(function(b){b.disabled=true;if(b.getAttribute('data-opt')===q.ans)b.classList.add('ok');else if(b.getAttribute('data-opt')===l&&!ok)b.classList.add('no');});
+  if(ok)sc++;showFB(ok,ok?'Correct!':'Wrong. Answer: '+q.ans,q.exp);
+  document.getElementById('qnext').style.display='block';hist.push({ok:ok});
+}
+function submitOpen(){
+  if(done)return;
+  var inp=document.getElementById('oi'),val=inp?inp.value.trim():'';if(!val)return;
+  done=true;clearInterval(tiv);
+  var q=qs[cur],acc=[q.ans].concat(q.alt||[]).map(function(a){return a.toLowerCase().trim();}),v=val.toLowerCase().trim();
+  var ok=acc.some(function(a){return v===a||v.includes(a)||a.includes(v);});
+  if(inp){inp.disabled=true;inp.style.borderColor=ok?'#16a34a':'#dc2626';}
+  if(ok)sc++;showFB(ok,ok?'Correct!':'Wrong. Answer: '+q.ans,q.exp);
+  document.getElementById('qnext').style.display='block';hist.push({ok:ok});
+}
+function disableAll(){document.querySelectorAll('.mc-btn').forEach(function(b){b.disabled=true;});var i=document.getElementById('oi');if(i)i.disabled=true;}
+function showFB(ok,msg,exp){var fb=document.getElementById('qfb');fb.className='fb '+(ok?'ok':'no');fb.innerHTML='<strong>'+msg+'</strong>'+(exp?' '+exp:'');fb.style.display='block';}
+function nextQ(){cur++;if(cur>=qs.length)showRes();else showQ();}
+
+function verdict(s){if(s===10)return'🏆 Perfect!';if(s>=8)return'⭐ Excellent';if(s>=6)return'👍 Good';if(s>=4)return'📚 Average';return'🔁 Try again';}
+
+function showRes(){
+  clearInterval(tiv);show('s-res');
+  document.getElementById('res-name').textContent=playerName;
+  document.getElementById('fscore').textContent=sc+' / 10';
+  document.getElementById('rc').textContent=sc;
+  document.getElementById('rw').textContent=10-sc;
+  document.getElementById('rv').textContent=verdict(sc);
+  saveScore();
+}
+
+function saveScore(){
+  var status=document.getElementById('save-status');
+  try{
+    var wk=getWeekKey();
+    var key='lb_week_'+wk;
+    var lb=lsGet(key)||{};
+    var prev=lb[playerName]||0;
+    if(sc>=prev) lb[playerName]=sc;
+    lsSet(key,lb);
+    var allKey='lb_all';
+    var all=lsGet(allKey)||{};
+    var allPrev=all[playerName]||0;
+    if(sc>=allPrev) all[playerName]=sc;
+    lsSet(allKey,all);
+    status.textContent=sc>prev?'⭐ New personal best saved!':'✓ Score saved to leaderboard.';
+  }catch(e){status.textContent='Could not save score.';}
+}
+
+function playAgain(){startQuiz();}
+function newPlayer(){playerName='';document.getElementById('nameInp').value='';show('s-name');}
+</script>
+</body>
+</html>
