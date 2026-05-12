@@ -3,213 +3,399 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Office Quiz</title>
+<title>Hawaiian Poke Bowl — Office Quiz</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:system-ui,sans-serif;background:#0f172a;color:#f1f5f9;min-height:100vh;padding:1.5rem;}
-  .card{background:#1e293b;border:1px solid #334155;border-radius:16px;padding:1.5rem;margin-bottom:1rem;}
-  h1{font-size:22px;font-weight:600;margin-bottom:0.25rem;}
-  p{font-size:14px;color:#94a3b8;line-height:1.6;}
-  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;font-size:15px;font-weight:500;border:none;border-radius:12px;cursor:pointer;margin-top:10px;}
-  .btn-blue{background:#3b82f6;color:#fff;}
-  .btn-blue:hover{background:#2563eb;}
-  .btn-gray{background:#1e293b;color:#f1f5f9;border:1px solid #334155;}
-  .btn-gray:hover{background:#334155;}
-  .inp{width:100%;padding:12px 14px;font-size:15px;border:1px solid #334155;border-radius:12px;background:#0f172a;color:#f1f5f9;outline:none;margin-bottom:4px;}
-  .inp:focus{border-color:#3b82f6;}
+  body{font-family:'Poppins',system-ui,sans-serif;background:#0a1a0f;color:#f0fdf4;min-height:100vh;overflow-x:hidden;}
+
+  /* Background */
+  .bg{position:fixed;inset:0;z-index:0;background:linear-gradient(160deg,#0a1a0f 0%,#0f2d1a 50%,#0a1a0f 100%);}
+  .wave{position:fixed;bottom:0;left:0;width:100%;opacity:0.07;z-index:0;}
+
+  .wrap{position:relative;z-index:1;padding:1.5rem;max-width:480px;margin:0 auto;}
+
+  /* Logo */
+  .logo{display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;padding-top:0.5rem;}
+  .logo-icon{width:44px;height:44px;background:linear-gradient(135deg,#16a34a,#f97316);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 14px rgba(249,115,22,0.3);}
+  .logo-text{line-height:1.1;}
+  .logo-text strong{font-size:14px;font-weight:700;color:#f0fdf4;display:block;}
+  .logo-text span{font-size:11px;color:#4ade80;font-weight:500;}
+
+  /* Screens */
   .screen{display:none;}
   .screen.active{display:block;}
-  .badge{display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;margin-bottom:1rem;}
-  .tbar{height:5px;background:#334155;border-radius:3px;margin-bottom:1rem;overflow:hidden;}
-  .tfill{height:100%;background:#3b82f6;border-radius:3px;transition:width 1s linear;}
-  .mc-btn{width:100%;text-align:left;padding:11px 14px;font-size:14px;border:1px solid #334155;border-radius:10px;background:#0f172a;color:#f1f5f9;cursor:pointer;margin-bottom:8px;}
-  .mc-btn:hover:not(:disabled){border-color:#64748b;}
-  .mc-btn.ok{background:#14532d;border-color:#16a34a;color:#86efac;}
-  .mc-btn.no{background:#450a0a;border-color:#dc2626;color:#fca5a5;}
-  .mc-btn:disabled{cursor:default;}
-  .oi{width:100%;padding:11px 14px;font-size:14px;border:1px solid #334155;border-radius:10px;background:#0f172a;color:#f1f5f9;margin-top:0.75rem;outline:none;}
-  .fb{margin-top:0.75rem;padding:10px 14px;border-radius:10px;font-size:14px;line-height:1.5;}
-  .fb.ok{background:#14532d;color:#86efac;}
-  .fb.no{background:#450a0a;color:#fca5a5;}
-  .score-big{font-size:56px;font-weight:700;text-align:center;margin:1rem 0;}
-  .met{background:#0f172a;border-radius:10px;padding:1rem;text-align:center;flex:1;}
-  .mv{font-size:22px;font-weight:600;}
-  .ml{font-size:11px;color:#64748b;margin-top:4px;}
+
+  /* Cards */
+  .card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:1.5rem;margin-bottom:1rem;backdrop-filter:blur(10px);}
+
+  /* Buttons */
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;font-size:15px;font-weight:600;border:none;border-radius:14px;cursor:pointer;transition:all 0.2s;font-family:'Poppins',sans-serif;}
+  .btn-primary{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;box-shadow:0 4px 20px rgba(22,163,74,0.4);}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(22,163,74,0.5);}
+  .btn-primary:active{transform:translateY(0);}
+  .btn-orange{background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;box-shadow:0 4px 20px rgba(249,115,22,0.4);}
+  .btn-ghost{background:rgba(255,255,255,0.06);color:#f0fdf4;border:1px solid rgba(255,255,255,0.1);}
+  .btn-ghost:hover{background:rgba(255,255,255,0.1);}
+  .btn:disabled{opacity:0.5;cursor:default;transform:none;}
+
+  /* Input */
+  .inp{width:100%;padding:14px 16px;font-size:15px;border:1.5px solid rgba(255,255,255,0.1);border-radius:14px;background:rgba(255,255,255,0.05);color:#f0fdf4;outline:none;font-family:'Poppins',sans-serif;transition:border-color 0.2s;}
+  .inp:focus{border-color:#16a34a;}
+  .inp::placeholder{color:#4b5563;}
+
+  /* Badge */
+  .badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:4px 10px;border-radius:20px;font-weight:600;}
+  .badge-green{background:rgba(22,163,74,0.2);color:#4ade80;border:1px solid rgba(74,222,128,0.2);}
+  .badge-orange{background:rgba(249,115,22,0.2);color:#fb923c;border:1px solid rgba(251,146,60,0.2);}
+  .badge-blue{background:rgba(34,211,238,0.15);color:#67e8f9;border:1px solid rgba(103,232,249,0.2);}
+
+  /* Timer bar */
+  .tbar{height:6px;background:rgba(255,255,255,0.06);border-radius:3px;margin-bottom:1.25rem;overflow:hidden;}
+  .tfill{height:100%;border-radius:3px;transition:width 1s linear;}
+  .tfill-mc{background:linear-gradient(90deg,#16a34a,#4ade80);}
+  .tfill-open{background:linear-gradient(90deg,#f97316,#fbbf24);}
+  .tfill-low{background:linear-gradient(90deg,#dc2626,#f87171);}
+
+  /* MC buttons */
+  .mc-opt{width:100%;text-align:left;padding:12px 16px;font-size:14px;font-weight:500;border:1.5px solid rgba(255,255,255,0.08);border-radius:14px;background:rgba(255,255,255,0.04);color:#f0fdf4;cursor:pointer;margin-bottom:8px;transition:all 0.15s;font-family:'Poppins',sans-serif;line-height:1.4;}
+  .mc-opt:hover:not(:disabled){border-color:rgba(74,222,128,0.4);background:rgba(22,163,74,0.1);}
+  .mc-opt.ok{background:rgba(22,163,74,0.2);border-color:#16a34a;color:#4ade80;}
+  .mc-opt.no{background:rgba(220,38,38,0.2);border-color:#dc2626;color:#fca5a5;}
+  .mc-opt:disabled{cursor:default;}
+
+  /* Open answer */
+  .oi{width:100%;padding:12px 16px;font-size:15px;border:1.5px solid rgba(255,255,255,0.1);border-radius:14px;background:rgba(255,255,255,0.05);color:#f0fdf4;margin-top:0.75rem;outline:none;font-family:'Poppins',sans-serif;}
+  .oi:focus{border-color:#f97316;}
+
+  /* Feedback */
+  .fb{margin-top:0.75rem;padding:12px 16px;border-radius:14px;font-size:13px;line-height:1.6;}
+  .fb.ok{background:rgba(22,163,74,0.15);border:1px solid rgba(22,163,74,0.3);color:#4ade80;}
+  .fb.no{background:rgba(220,38,38,0.15);border:1px solid rgba(220,38,38,0.3);color:#fca5a5;}
+
+  /* Score */
+  .score-big{font-size:64px;font-weight:800;text-align:center;background:linear-gradient(135deg,#4ade80,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+  /* Stats row */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem;}
+  .stat{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:0.75rem;text-align:center;}
+  .stat-val{font-size:20px;font-weight:700;}
+  .stat-lbl{font-size:10px;color:#6b7280;margin-top:2px;}
+
+  /* Progress dots */
+  .dots{display:flex;gap:4px;justify-content:center;margin-bottom:1rem;flex-wrap:wrap;}
+  .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.1);}
+  .dot.done-ok{background:#16a34a;}
+  .dot.done-no{background:#dc2626;}
+  .dot.active{background:#f97316;box-shadow:0 0 8px #f97316;}
+
+  /* Divider */
+  .divider{height:1px;background:rgba(255,255,255,0.06);margin:1rem 0;}
+
+  /* Already played */
+  .locked-icon{font-size:56px;text-align:center;margin:1rem 0;}
+  .countdown{font-size:28px;font-weight:700;text-align:center;color:#4ade80;margin:0.5rem 0;}
+  .countdown-lbl{font-size:12px;color:#6b7280;text-align:center;}
+
   .err{color:#f87171;font-size:13px;margin-top:6px;display:none;}
+  .loading-txt{text-align:center;padding:2rem 0;color:#4b5563;font-size:14px;}
+
+  /* Hero start */
+  .hero{text-align:center;padding:1.5rem 0 1rem;}
+  .hero-emoji{font-size:52px;margin-bottom:0.75rem;display:block;}
+  .hero h1{font-size:24px;font-weight:800;margin-bottom:0.25rem;}
+  .hero p{font-size:13px;color:#6b7280;line-height:1.6;}
+
+  .pill-row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:0.75rem 0 1.25rem;}
 </style>
 </head>
 <body>
+<div class="bg"></div>
+<svg class="wave" viewBox="0 0 1440 200" preserveAspectRatio="none"><path fill="#16a34a" d="M0,100 C360,180 720,20 1080,100 C1260,140 1380,80 1440,100 L1440,200 L0,200 Z"/></svg>
 
-<!-- NAME -->
-<div class="screen active" id="s-name">
-  <div class="card" style="text-align:center;padding:2rem 1.5rem;">
-    <div style="font-size:40px;margin-bottom:0.75rem;">🧠</div>
-    <h1>Office Knowledge Quiz</h1>
-    <p style="margin:0.5rem 0 1.5rem;">Enter your name to play and compete on the leaderboard!</p>
-    <input class="inp" id="nameInp" type="text" placeholder="Your name…" maxlength="30"/>
-    <div class="err" id="name-err">Please enter your name first.</div>
-    <button class="btn btn-blue" onclick="goStart()">▶ Start quiz</button>
-  </div>
-</div>
-
-<!-- QUESTION -->
-<div class="screen" id="s-q">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;">
-    <span id="qcnt" style="font-size:12px;color:#64748b;"></span>
-    <span class="badge" id="qcat" style="background:#1e3a5f;color:#93c5fd;"></span>
-  </div>
-  <div class="tbar"><div class="tfill" id="tfill" style="width:100%"></div></div>
-  <div class="card">
-    <p id="qtxt" style="font-size:16px;font-weight:500;color:#f1f5f9;margin-bottom:0.5rem;"></p>
-    <div id="qarea"></div>
-    <div id="qfb" class="fb" style="display:none;"></div>
-  </div>
-  <div id="qnext" style="display:none;">
-    <button class="btn btn-gray" onclick="nextQ()">Next →</button>
-  </div>
-</div>
-
-<!-- RESULTS -->
-<div class="screen" id="s-res">
-  <div class="card" style="text-align:center;">
-    <p style="font-size:14px;color:#94a3b8;margin-bottom:0.25rem;">Well done, <span id="res-name" style="color:#f1f5f9;font-weight:600;"></span>!</p>
-    <div class="score-big" id="fscore"></div>
-    <div style="display:flex;gap:8px;margin-bottom:1rem;">
-      <div class="met"><div class="mv" id="rc"></div><div class="ml">Correct</div></div>
-      <div class="met"><div class="mv" id="rw"></div><div class="ml">Wrong</div></div>
-      <div class="met"><div class="mv" id="rv"></div><div class="ml">Rating</div></div>
+<div class="wrap">
+  <!-- LOGO -->
+  <div class="logo">
+    <div class="logo-icon">🍜</div>
+    <div class="logo-text">
+      <strong>Hawaiian Poke Bowl</strong>
+      <span>Office Quiz</span>
     </div>
-    <div id="save-status" style="font-size:13px;color:#64748b;margin-bottom:1rem;"></div>
-    <button class="btn btn-blue" onclick="playAgain()">🔄 Play again</button>
-    <button class="btn btn-gray" onclick="newPlayer()" style="margin-top:8px;">👤 New player</button>
+  </div>
+
+  <!-- NAME SCREEN -->
+  <div class="screen active" id="s-name">
+    <div class="hero">
+      <span class="hero-emoji">🏆</span>
+      <h1>Who's the Smartest?</h1>
+      <p>Test your knowledge, climb the leaderboard<br>and claim the weekly trophy!</p>
+    </div>
+    <div class="pill-row">
+      <span class="badge badge-green">♾️ Infinite questions</span>
+      <span class="badge badge-orange">🔒 1x per week</span>
+      <span class="badge badge-blue">🌍 All topics</span>
+    </div>
+    <div class="card">
+      <label style="font-size:13px;color:#9ca3af;font-weight:500;display:block;margin-bottom:8px;">YOUR NAME</label>
+      <input class="inp" id="nameInp" type="text" placeholder="Enter your name…" maxlength="30"/>
+      <div class="err" id="name-err">Please enter your name first.</div>
+      <button class="btn btn-primary" onclick="goStart()" style="margin-top:12px;">🎯 Start Quiz</button>
+    </div>
+  </div>
+
+  <!-- ALREADY PLAYED -->
+  <div class="screen" id="s-played">
+    <div class="card" style="text-align:center;padding:2rem;">
+      <div class="locked-icon">🔒</div>
+      <h2 style="font-size:18px;font-weight:700;margin-bottom:0.5rem;">Already played this week!</h2>
+      <p style="font-size:13px;color:#6b7280;margin-bottom:1.5rem;">You can play again next week.<br>Check the leaderboard to see your ranking!</p>
+      <div style="background:rgba(22,163,74,0.1);border:1px solid rgba(22,163,74,0.2);border-radius:14px;padding:1.25rem;margin-bottom:1rem;">
+        <div style="font-size:12px;color:#6b7280;margin-bottom:4px;">YOUR SCORE THIS WEEK</div>
+        <div class="countdown" id="played-score">—</div>
+        <div class="countdown-lbl">out of 10</div>
+      </div>
+      <div style="font-size:12px;color:#6b7280;">Next round unlocks Monday</div>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="screen" id="s-load">
+    <div class="loading-txt" style="padding:4rem 0;">
+      <div style="font-size:36px;margin-bottom:1rem;">🌊</div>
+      Loading fresh questions…
+    </div>
+  </div>
+
+  <!-- QUESTION -->
+  <div class="screen" id="s-q">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+      <span id="qcnt" style="font-size:13px;color:#6b7280;font-weight:500;"></span>
+      <span class="badge badge-blue" id="qcat"></span>
+    </div>
+    <div class="dots" id="qdots"></div>
+    <div class="tbar"><div class="tfill tfill-mc" id="tfill" style="width:100%"></div></div>
+    <div class="card">
+      <p id="qtxt" style="font-size:15px;font-weight:600;color:#f0fdf4;margin-bottom:0.75rem;line-height:1.5;"></p>
+      <div id="qarea"></div>
+      <div id="qfb" class="fb" style="display:none;"></div>
+    </div>
+    <div id="qnext" style="display:none;">
+      <button class="btn btn-ghost" onclick="nextQ()">Next question →</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="screen" id="s-res">
+    <div class="card" style="text-align:center;padding:2rem 1.5rem;">
+      <div id="res-emoji" style="font-size:48px;margin-bottom:0.5rem;"></div>
+      <p style="font-size:13px;color:#9ca3af;margin-bottom:0.25rem;">Well done, <strong id="res-name" style="color:#f0fdf4;"></strong>!</p>
+      <div class="score-big" id="fscore"></div>
+      <p id="res-verdict" style="font-size:13px;color:#9ca3af;margin-bottom:1.25rem;"></p>
+      <div class="stats">
+        <div class="stat"><div class="stat-val" style="color:#4ade80;" id="rc"></div><div class="stat-lbl">Correct</div></div>
+        <div class="stat"><div class="stat-val" style="color:#f87171;" id="rw"></div><div class="stat-lbl">Wrong</div></div>
+        <div class="stat"><div class="stat-val" style="color:#fbbf24;" id="rv"></div><div class="stat-lbl">Rating</div></div>
+      </div>
+      <div id="save-status" style="font-size:12px;color:#6b7280;margin-bottom:1rem;"></div>
+      <div class="divider"></div>
+      <p style="font-size:12px;color:#6b7280;">📺 Check the office screen for the leaderboard!</p>
+      <p style="font-size:12px;color:#6b7280;margin-top:4px;">🔒 You can play again next Monday.</p>
+    </div>
   </div>
 </div>
 
 <script>
-var BANK=[
-  {cat:"Science",type:"mc",q:"What is the chemical symbol for gold?",opts:["A. Go","B. Gd","C. Au","D. Ag"],ans:"C",exp:"Au comes from the Latin 'aurum'."},
-  {cat:"Science",type:"mc",q:"How many bones are in the adult human body?",opts:["A. 206","B. 215","C. 198","D. 223"],ans:"A",exp:"Adults have 206 bones."},
-  {cat:"Science",type:"open",q:"What planet is known as the Red Planet?",ans:"mars",alt:[],exp:"Mars gets its red colour from iron oxide."},
-  {cat:"Science",type:"open",q:"What is the powerhouse of the cell?",ans:"mitochondria",alt:["mitochondrion"],exp:"Mitochondria produce ATP."},
-  {cat:"Science",type:"mc",q:"What gas do plants absorb during photosynthesis?",opts:["A. Oxygen","B. Nitrogen","C. Carbon dioxide","D. Hydrogen"],ans:"C",exp:"Plants convert CO₂ into glucose."},
-  {cat:"Science",type:"mc",q:"What is the approximate speed of light?",opts:["A. 300,000 km/s","B. 150,000 km/s","C. 450,000 km/s","D. 200,000 km/s"],ans:"A",exp:"~299,792 km/s in a vacuum."},
-  {cat:"History",type:"mc",q:"In which year did World War II end?",opts:["A. 1943","B. 1944","C. 1945","D. 1946"],ans:"C",exp:"Germany May, Japan September 1945."},
-  {cat:"History",type:"mc",q:"Who was the first person to walk on the Moon?",opts:["A. Buzz Aldrin","B. Yuri Gagarin","C. Neil Armstrong","D. John Glenn"],ans:"C",exp:"Neil Armstrong, July 20, 1969."},
-  {cat:"History",type:"open",q:"In which city was the Titanic built?",ans:"belfast",alt:[],exp:"Harland and Wolff shipyard, Belfast."},
-  {cat:"History",type:"open",q:"Who painted the Mona Lisa?",ans:"leonardo da vinci",alt:["da vinci","leonardo"],exp:"Leonardo da Vinci, approx. 1503–1519."},
-  {cat:"Geography",type:"mc",q:"What is the capital of Australia?",opts:["A. Sydney","B. Melbourne","C. Brisbane","D. Canberra"],ans:"D",exp:"Canberra, capital since 1913."},
-  {cat:"Geography",type:"mc",q:"Which is the longest river in the world?",opts:["A. Amazon","B. Yangtze","C. Nile","D. Mississippi"],ans:"C",exp:"The Nile, ~6,650 km."},
-  {cat:"Geography",type:"open",q:"What is the smallest country in the world?",ans:"vatican city",alt:["vatican","holy see"],exp:"Vatican City, 0.44 km²."},
-  {cat:"Geography",type:"open",q:"On which continent is the Sahara Desert?",ans:"africa",alt:[],exp:"Spans 11 countries in North Africa."},
-  {cat:"Sport",type:"mc",q:"How many players are on a soccer team on the field?",opts:["A. 9","B. 10","C. 11","D. 12"],ans:"C",exp:"11 players including the goalkeeper."},
-  {cat:"Sport",type:"mc",q:"Which country has won the most FIFA World Cups?",opts:["A. Germany","B. Argentina","C. Italy","D. Brazil"],ans:"D",exp:"Brazil, five times."},
-  {cat:"Sport",type:"open",q:"How many Grand Slam tennis tournaments are there per year?",ans:"4",alt:["four"],exp:"Australian, French, Wimbledon, US Open."},
-  {cat:"Music",type:"mc",q:"How many strings does a standard guitar have?",opts:["A. 4","B. 5","C. 6","D. 7"],ans:"C",exp:"6 strings, tuned E-A-D-G-B-E."},
-  {cat:"Music",type:"open",q:"Which band released the album 'Abbey Road'?",ans:"the beatles",alt:["beatles"],exp:"The Beatles, September 1969."},
-  {cat:"Film",type:"mc",q:"Who directed 'Jurassic Park' (1993)?",opts:["A. James Cameron","B. George Lucas","C. Steven Spielberg","D. Ridley Scott"],ans:"C",exp:"Steven Spielberg, June 1993."},
-  {cat:"Film",type:"open",q:"What animated film features a clownfish named Nemo?",ans:"finding nemo",alt:["nemo"],exp:"Finding Nemo, Pixar 2003."},
-  {cat:"Film",type:"mc",q:"Who played Iron Man in the MCU?",opts:["A. Chris Evans","B. Chris Hemsworth","C. Mark Ruffalo","D. Robert Downey Jr."],ans:"D",exp:"Robert Downey Jr., 2008–2019."},
-  {cat:"Food",type:"mc",q:"Which country is the origin of sushi?",opts:["A. China","B. Korea","C. Japan","D. Thailand"],ans:"C",exp:"Sushi originated in Japan."},
-  {cat:"Food",type:"open",q:"What is the main ingredient in guacamole?",ans:"avocado",alt:["avocados"],exp:"Mashed ripe avocados."},
-  {cat:"Literature",type:"mc",q:"Who wrote '1984'?",opts:["A. Aldous Huxley","B. George Orwell","C. Ray Bradbury","D. H.G. Wells"],ans:"B",exp:"George Orwell, 1949."},
-  {cat:"Literature",type:"open",q:"What school does Harry Potter attend?",ans:"hogwarts",alt:[],exp:"Hogwarts School of Witchcraft and Wizardry."},
-  {cat:"Technology",type:"mc",q:"What does HTTP stand for?",opts:["A. HyperText Transfer Protocol","B. High Transfer Text Program","C. Hyper Terminal Transfer Process","D. HyperText Transmission Path"],ans:"A",exp:"Foundation of web communication."},
-  {cat:"Technology",type:"open",q:"What does CPU stand for?",ans:"central processing unit",alt:["central processor unit"],exp:"The main component executing instructions."},
-  {cat:"Technology",type:"mc",q:"Which company created Android?",opts:["A. Apple","B. Microsoft","C. Google","D. Samsung"],ans:"C",exp:"Google acquired Android Inc. in 2005."},
-  {cat:"Nature",type:"mc",q:"What is the largest mammal in the world?",opts:["A. African Elephant","B. Blue Whale","C. Giant Squid","D. Sperm Whale"],ans:"B",exp:"Blue whale, up to 30m and 180 tonnes."},
-  {cat:"Nature",type:"open",q:"What is the hardest natural substance on Earth?",ans:"diamond",alt:[],exp:"Diamond scores 10 on the Mohs scale."},
-  {cat:"Nature",type:"mc",q:"How many legs does a spider have?",opts:["A. 6","B. 8","C. 10","D. 12"],ans:"B",exp:"Spiders are arachnids with 8 legs."},
-  {cat:"Maths",type:"mc",q:"What is the square root of 144?",opts:["A. 11","B. 12","C. 13","D. 14"],ans:"B",exp:"12 × 12 = 144."},
-  {cat:"Maths",type:"open",q:"How many sides does a hexagon have?",ans:"6",alt:["six"],exp:"6 sides and 6 angles."},
-  {cat:"General",type:"mc",q:"How many continents are there?",opts:["A. 5","B. 6","C. 7","D. 8"],ans:"C",exp:"Africa, Antarctica, Asia, Australia, Europe, N+S America."},
-  {cat:"General",type:"open",q:"How many hours are in a week?",ans:"168",alt:[],exp:"7 × 24 = 168."},
-  {cat:"General",type:"mc",q:"What colour is a giraffe's tongue?",opts:["A. Pink","B. Red","C. Purple-black","D. Grey"],ans:"C",exp:"Dark purplish-black for UV protection."}
-];
+// ── Config ────────────────────────────────────────────────────
+var DB = 'hpb_quiz_';
+var QUESTIONS_PER_ROUND = 10;
+var TIMER_MC = 20;
+var TIMER_OPEN = 25;
 
-var qs=[],cur=0,sc=0,hist=[],tiv=null,tl=0,done=false,playerName='',pool=[];
+// ── State ─────────────────────────────────────────────────────
+var qs=[], cur=0, sc=0, results=[], tiv=null, tl=0, done=false, playerName='';
 
-// ── Storage helpers ──────────────────────────────────────────
-var DB_PREFIX='quizapp_'; // change this to match screen.html
-function dbKey(k){return DB_PREFIX+k;}
-function lsSet(k,v){try{localStorage.setItem(dbKey(k),JSON.stringify(v));}catch(e){}}
-function lsGet(k){try{var v=localStorage.getItem(dbKey(k));return v?JSON.parse(v):null;}catch(e){return null;}}
-
+// ── Helpers ───────────────────────────────────────────────────
+function key(k){return DB+k;}
+function lsSet(k,v){try{localStorage.setItem(key(k),JSON.stringify(v));}catch(e){}}
+function lsGet(k){try{var v=localStorage.getItem(key(k));return v?JSON.parse(v):null;}catch(e){return null;}}
 function getWeekKey(){var n=new Date(),j=new Date(n.getFullYear(),0,1),w=Math.ceil(((n-j)/86400000+j.getDay()+1)/7);return 'w'+n.getFullYear()+'-'+w;}
-
+function decode(s){var t=document.createElement('textarea');t.innerHTML=s;return t.value;}
 function show(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById(id).classList.add('active');}
 function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+
+// ── Name screen ───────────────────────────────────────────────
+document.getElementById('nameInp').addEventListener('keydown',function(e){if(e.key==='Enter')goStart();});
 
 function goStart(){
   var n=document.getElementById('nameInp').value.trim();
   if(!n){document.getElementById('name-err').style.display='block';return;}
   document.getElementById('name-err').style.display='none';
-  playerName=n;startQuiz();
-}
-document.getElementById('nameInp').addEventListener('keydown',function(e){if(e.key==='Enter')goStart();});
+  playerName=n;
 
-function startQuiz(){if(pool.length<10){pool=shuffle(BANK.slice());}qs=pool.splice(0,10);cur=0;sc=0;hist=[];showQ();}
+  // Check if already played this week
+  var wk=getWeekKey();
+  var played=lsGet('played_'+wk+'_'+n.toLowerCase().replace(/\s+/g,'_'));
+  if(played){
+    document.getElementById('played-score').textContent=played.score;
+    show('s-played');
+    return;
+  }
+  loadQuestions();
+}
+
+// ── Load questions from Open Trivia DB ────────────────────────
+async function loadQuestions(){
+  show('s-load');
+  try{
+    var url='https://opentdb.com/api.php?amount='+QUESTIONS_PER_ROUND+'&type=multiple';
+    var r=await fetch(url);
+    var data=await r.json();
+    if(data.response_code!==0) throw new Error('API error');
+    qs=data.results.map(function(q){
+      var opts=q.incorrect_answers.map(decode).concat([decode(q.correct_answer)]);
+      shuffle(opts);
+      return {
+        cat: decode(q.category).replace('Entertainment: ','').replace('Science: ',''),
+        q: decode(q.question),
+        type: 'mc',
+        opts: opts,
+        ans: decode(q.correct_answer),
+        diff: q.difficulty
+      };
+    });
+    cur=0;sc=0;results=[];
+    showQ();
+  }catch(e){
+    // Fallback: use built-in bank if API fails
+    loadFallback();
+  }
+}
+
+function loadFallback(){
+  var BANK=[
+    {cat:"Science",type:"mc",q:"What is the chemical symbol for gold?",opts:["Go","Gd","Au","Ag"],ans:"Au",diff:"easy"},
+    {cat:"History",type:"mc",q:"In which year did World War II end?",opts:["1943","1944","1945","1946"],ans:"1945",diff:"easy"},
+    {cat:"Geography",type:"mc",q:"What is the capital of Australia?",opts:["Sydney","Melbourne","Brisbane","Canberra"],ans:"Canberra",diff:"medium"},
+    {cat:"Science",type:"mc",q:"How many bones are in the adult human body?",opts:["206","215","198","223"],ans:"206",diff:"medium"},
+    {cat:"Sport",type:"mc",q:"Which country has won the most FIFA World Cups?",opts:["Germany","Argentina","Italy","Brazil"],ans:"Brazil",diff:"easy"},
+    {cat:"Music",type:"mc",q:"How many strings does a standard guitar have?",opts:["4","5","6","7"],ans:"6",diff:"easy"},
+    {cat:"Film",type:"mc",q:"Who directed 'Jurassic Park' (1993)?",opts:["James Cameron","George Lucas","Steven Spielberg","Ridley Scott"],ans:"Steven Spielberg",diff:"medium"},
+    {cat:"Food",type:"mc",q:"Which country is the origin of sushi?",opts:["China","Korea","Japan","Thailand"],ans:"Japan",diff:"easy"},
+    {cat:"Literature",type:"mc",q:"Who wrote '1984'?",opts:["Aldous Huxley","George Orwell","Ray Bradbury","H.G. Wells"],ans:"George Orwell",diff:"medium"},
+    {cat:"Technology",type:"mc",q:"What does HTTP stand for?",opts:["HyperText Transfer Protocol","High Transfer Text Program","Hyper Terminal Transfer","HyperText Transmission Path"],ans:"HyperText Transfer Protocol",diff:"medium"}
+  ];
+  qs=shuffle(BANK.slice()).slice(0,QUESTIONS_PER_ROUND);
+  cur=0;sc=0;results=[];
+  showQ();
+}
+
+// ── Question screen ───────────────────────────────────────────
+function buildDots(){
+  var html='';
+  for(var i=0;i<qs.length;i++){
+    var cls='dot'+(i<cur?(results[i]?'  done-ok':' done-no'):i===cur?' active':'');
+    html+='<div class="dot'+cls+'"></div>';
+  }
+  document.getElementById('qdots').innerHTML=html;
+}
+
+function diffBadge(d){
+  if(d==='easy') return 'badge-green';
+  if(d==='medium') return 'badge-orange';
+  return 'badge-blue'; // hard
+}
 
 function showQ(){
   show('s-q');done=false;
   var q=qs[cur];
-  document.getElementById('qcnt').textContent='Q '+(cur+1)+' / 10';
-  document.getElementById('qcat').textContent=q.cat;
+  document.getElementById('qcnt').textContent='Question '+(cur+1)+' / '+qs.length;
+  var catEl=document.getElementById('qcat');
+  catEl.textContent=q.cat;
+  catEl.className='badge '+(q.diff?diffBadge(q.diff):'badge-blue');
   document.getElementById('qtxt').textContent=q.q;
   document.getElementById('qfb').style.display='none';
   document.getElementById('qnext').style.display='none';
+  buildDots();
+
   var area=document.getElementById('qarea');
-  if(q.type==='mc'){
-    var h='';
-    for(var i=0;i<q.opts.length;i++) h+='<button class="mc-btn" data-opt="'+q.opts[i].charAt(0)+'" onclick="submitMC(\''+q.opts[i].charAt(0)+'\')">'+q.opts[i]+'</button>';
-    area.innerHTML=h;
-  } else {
-    area.innerHTML='<input class="oi" id="oi" type="text" placeholder="Type your answer…" autocomplete="off"><br><button class="btn btn-blue" style="margin-top:10px;" onclick="submitOpen()">✓ Submit</button>';
-    var inp=document.getElementById('oi');
-    inp.onkeydown=function(e){if(e.key==='Enter')submitOpen();};
-    setTimeout(function(){inp.focus();},50);
+  // Always MC from Open Trivia DB
+  var h='';
+  for(var i=0;i<q.opts.length;i++){
+    var opt=q.opts[i].replace(/"/g,'&quot;');
+    h+='<button class="mc-opt" data-opt="'+opt+'" onclick="submitMC(this)">'+q.opts[i]+'</button>';
   }
-  startTimer(q.type==='open'?30:20);
+  area.innerHTML=h;
+  startTimer(TIMER_MC);
 }
 
 function startTimer(sec){
   clearInterval(tiv);tl=sec;
   var f=document.getElementById('tfill');
   f.style.transition='none';f.style.width='100%';
+  f.className='tfill tfill-mc';
   setTimeout(function(){f.style.transition='width '+sec+'s linear';f.style.width='0%';},50);
-  tiv=setInterval(function(){tl--;if(tl<=0){clearInterval(tiv);if(!done)timeOut();}},1000);
+  tiv=setInterval(function(){
+    tl--;
+    if(tl<=5) document.getElementById('tfill').className='tfill tfill-low';
+    if(tl<=0){clearInterval(tiv);if(!done)timeOut();}
+  },1000);
 }
 
-function timeOut(){done=true;var q=qs[cur];showFB(false,"Time's up! Answer: "+q.ans,q.exp);disableAll();document.getElementById('qnext').style.display='block';hist.push({ok:false});}
-function submitMC(l){
+function timeOut(){
+  done=true;
+  var q=qs[cur];
+  document.querySelectorAll('.mc-opt').forEach(function(b){b.disabled=true;if(b.getAttribute('data-opt')===q.ans)b.classList.add('ok');});
+  showFB(false,"⏰ Time's up! Answer: "+q.ans,'');
+  results[cur]=false;
+  document.getElementById('qnext').style.display='block';
+  buildDots();
+}
+
+function submitMC(btn){
   if(done)return;done=true;clearInterval(tiv);
-  var q=qs[cur],ok=(l===q.ans);
-  document.querySelectorAll('.mc-btn').forEach(function(b){b.disabled=true;if(b.getAttribute('data-opt')===q.ans)b.classList.add('ok');else if(b.getAttribute('data-opt')===l&&!ok)b.classList.add('no');});
-  if(ok)sc++;showFB(ok,ok?'Correct!':'Wrong. Answer: '+q.ans,q.exp);
-  document.getElementById('qnext').style.display='block';hist.push({ok:ok});
+  var q=qs[cur];
+  var chosen=btn.getAttribute('data-opt');
+  var ok=(chosen===q.ans);
+  document.querySelectorAll('.mc-opt').forEach(function(b){
+    b.disabled=true;
+    if(b.getAttribute('data-opt')===q.ans) b.classList.add('ok');
+    else if(b===btn&&!ok) b.classList.add('no');
+  });
+  if(ok)sc++;
+  results[cur]=ok;
+  showFB(ok,ok?'✅ Correct!':'❌ Wrong. The answer is: '+q.ans,'');
+  document.getElementById('qnext').style.display='block';
+  buildDots();
 }
-function submitOpen(){
-  if(done)return;
-  var inp=document.getElementById('oi'),val=inp?inp.value.trim():'';if(!val)return;
-  done=true;clearInterval(tiv);
-  var q=qs[cur],acc=[q.ans].concat(q.alt||[]).map(function(a){return a.toLowerCase().trim();}),v=val.toLowerCase().trim();
-  var ok=acc.some(function(a){return v===a||v.includes(a)||a.includes(v);});
-  if(inp){inp.disabled=true;inp.style.borderColor=ok?'#16a34a':'#dc2626';}
-  if(ok)sc++;showFB(ok,ok?'Correct!':'Wrong. Answer: '+q.ans,q.exp);
-  document.getElementById('qnext').style.display='block';hist.push({ok:ok});
+
+function showFB(ok,msg,exp){
+  var fb=document.getElementById('qfb');
+  fb.className='fb '+(ok?'ok':'no');
+  fb.innerHTML='<strong>'+msg+'</strong>'+(exp?' '+exp:'');
+  fb.style.display='block';
 }
-function disableAll(){document.querySelectorAll('.mc-btn').forEach(function(b){b.disabled=true;});var i=document.getElementById('oi');if(i)i.disabled=true;}
-function showFB(ok,msg,exp){var fb=document.getElementById('qfb');fb.className='fb '+(ok?'ok':'no');fb.innerHTML='<strong>'+msg+'</strong>'+(exp?' '+exp:'');fb.style.display='block';}
+
 function nextQ(){cur++;if(cur>=qs.length)showRes();else showQ();}
 
-function verdict(s){if(s===10)return'🏆 Perfect!';if(s>=8)return'⭐ Excellent';if(s>=6)return'👍 Good';if(s>=4)return'📚 Average';return'🔁 Try again';}
+// ── Results ───────────────────────────────────────────────────
+function verdict(s){
+  if(s===10)return{e:'🏆',t:'Perfect score!',r:'Genius'};
+  if(s>=8)return{e:'🌟',t:'Outstanding!',r:'Excellent'};
+  if(s>=6)return{e:'🎯',t:'Great job!',r:'Good'};
+  if(s>=4)return{e:'📚',t:'Not bad!',r:'Average'};
+  return{e:'🔄',t:'Keep practising!',r:'Try again'};
+}
 
 function showRes(){
   clearInterval(tiv);show('s-res');
+  var v=verdict(sc);
+  document.getElementById('res-emoji').textContent=v.e;
   document.getElementById('res-name').textContent=playerName;
   document.getElementById('fscore').textContent=sc+' / 10';
   document.getElementById('rc').textContent=sc;
   document.getElementById('rw').textContent=10-sc;
-  document.getElementById('rv').textContent=verdict(sc);
+  document.getElementById('rv').textContent=v.r;
+  document.getElementById('res-verdict').textContent=v.t;
   saveScore();
 }
 
@@ -217,22 +403,25 @@ function saveScore(){
   var status=document.getElementById('save-status');
   try{
     var wk=getWeekKey();
-    var key='lb_week_'+wk;
-    var lb=lsGet(key)||{};
+    var pKey='played_'+wk+'_'+playerName.toLowerCase().replace(/\s+/g,'_');
+    lsSet(pKey,{score:sc,name:playerName,week:wk});
+
+    // Save to leaderboard (week)
+    var lbKey='lb_'+wk;
+    var lb=lsGet(lbKey)||{};
     var prev=lb[playerName]||0;
     if(sc>=prev) lb[playerName]=sc;
-    lsSet(key,lb);
-    var allKey='lb_all';
-    var all=lsGet(allKey)||{};
-    var allPrev=all[playerName]||0;
-    if(sc>=allPrev) all[playerName]=sc;
-    lsSet(allKey,all);
-    status.textContent=sc>prev?'⭐ New personal best saved!':'✓ Score saved to leaderboard.';
-  }catch(e){status.textContent='Could not save score.';}
-}
+    lsSet(lbKey,lb);
 
-function playAgain(){startQuiz();}
-function newPlayer(){playerName='';document.getElementById('nameInp').value='';show('s-name');}
+    // All time
+    var allLb=lsGet('lb_all')||{};
+    var allPrev=allLb[playerName]||0;
+    if(sc>=allPrev) allLb[playerName]=sc;
+    lsSet('lb_all',allLb);
+
+    status.textContent=sc>prev?'⭐ New personal best saved to leaderboard!':'✓ Score saved to leaderboard.';
+  }catch(e){status.textContent='Score could not be saved.';}
+}
 </script>
 </body>
 </html>
