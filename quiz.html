@@ -126,7 +126,7 @@ var BANK=[
   {cat:"General",type:"mc",q:"What colour is a giraffe's tongue?",opts:["A. Pink","B. Red","C. Purple-black","D. Grey"],ans:"C",exp:"Dark purplish-black for UV protection."}
 ];
 
-var qs=[],cur=0,sc=0,hist=[],tiv=null,tl=0,done=false,playerName='';
+var qs=[],cur=0,sc=0,hist=[],tiv=null,tl=0,done=false,playerName='',pool=[];
 
 // ── Storage helpers ──────────────────────────────────────────
 var DB_PREFIX='quizapp_'; // change this to match screen.html
@@ -147,7 +147,7 @@ function goStart(){
 }
 document.getElementById('nameInp').addEventListener('keydown',function(e){if(e.key==='Enter')goStart();});
 
-function startQuiz(){qs=shuffle(BANK.slice()).slice(0,10);cur=0;sc=0;hist=[];showQ();}
+function startQuiz(){if(pool.length<10){pool=shuffle(BANK.slice());}qs=pool.splice(0,10);cur=0;sc=0;hist=[];showQ();}
 
 function showQ(){
   show('s-q');done=false;
