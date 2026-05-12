@@ -3,92 +3,171 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Office Quiz — Leaderboard</title>
+<title>Hawaiian Poke Bowl — Office Quiz Leaderboard</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:system-ui,sans-serif;background:#0f172a;color:#f1f5f9;min-height:100vh;display:grid;grid-template-columns:1fr 340px;gap:0;}
+  html,body{height:100%;overflow:hidden;}
+  body{font-family:'Poppins',system-ui,sans-serif;background:#0a1a0f;color:#f0fdf4;}
 
-  /* LEFT — leaderboard */
-  #left{padding:2.5rem 2rem;display:flex;flex-direction:column;}
-  #left h1{font-size:32px;font-weight:700;margin-bottom:0.25rem;display:flex;halign-items:center;gap:12px;}
-  #week-label{font-size:13px;color:#64748b;margin-bottom:2rem;}
-  .tab-bar{display:flex;gap:4px;margin-bottom:1.5rem;border-bottom:1px solid #1e293b;}
-  .tab{padding:8px 20px;font-size:14px;color:#64748b;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
-  .tab.active{color:#60a5fa;border-bottom-color:#60a5fa;font-weight:600;}
-  #lb-list{flex:1;}
-  .lb-row{display:flex;align-items:center;gap:14px;padding:12px 10px;border-radius:12px;margin-bottom:6px;transition:background 0.2s;}
-  .lb-row:hover{background:#1e293b;}
-  .lb-row.top1{background:#1c1a0f;border:1px solid #854d0e;}
-  .lb-row.top2{background:#111827;border:1px solid #374151;}
-  .lb-row.top3{background:#1a0f0f;border:1px solid #7f1d1d;}
-  .rank{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;}
-  .lb-name{flex:1;font-size:18px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .lb-score{font-size:22px;font-weight:700;color:#f1f5f9;}
-  .lb-sub{font-size:13px;color:#475569;}
-  #lb-empty{font-size:15px;color:#475569;text-align:center;padding:4rem 0;}
-  #lb-updated{font-size:12px;color:#334155;margin-top:auto;padding-top:1rem;}
+  /* Layout */
+  #app{display:grid;grid-template-columns:1fr 360px;height:100vh;}
 
-  /* RIGHT — QR + info */
-  #right{background:#0b1120;border-left:1px solid #1e293b;padding:2.5rem 2rem;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
-  #right h2{font-size:20px;font-weight:600;margin-bottom:0.5rem;}
-  #right p{font-size:13px;color:#64748b;line-height:1.7;margin-bottom:1.5rem;}
-  #qr-img{width:200px;height:200px;border-radius:16px;border:3px solid #1e293b;margin-bottom:1.5rem;background:#fff;padding:8px;}
-  #quiz-url{font-size:12px;color:#60a5fa;word-break:break-all;background:#1e293b;padding:8px 12px;border-radius:8px;margin-bottom:2rem;}
-  .stat{background:#1e293b;border-radius:12px;padding:0.75rem 1.25rem;margin-bottom:0.75rem;width:100%;text-align:left;}
-  .stat-val{font-size:20px;font-weight:700;}
-  .stat-lbl{font-size:11px;color:#64748b;}
-  #live-dot{display:inline-block;width:8px;height:8px;background:#22c55e;border-radius:50%;margin-right:6px;animation:pulse 2s infinite;}
-  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+  /* Background */
+  .bg-left{background:linear-gradient(160deg,#0a1a0f 0%,#0f2d1a 100%);}
+  .bg-right{background:#06120a;border-left:1px solid rgba(255,255,255,0.06);}
+
+  /* LEFT */
+  #left{padding:2.5rem 2.5rem 1.5rem;display:flex;flex-direction:column;position:relative;overflow:hidden;}
+  .wave-bg{position:absolute;bottom:0;left:0;width:100%;opacity:0.05;pointer-events:none;}
+
+  /* Header */
+  .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-icon{width:52px;height:52px;background:linear-gradient(135deg,#16a34a,#f97316);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 4px 20px rgba(249,115,22,0.3);}
+  .logo-text strong{font-size:16px;font-weight:800;display:block;color:#f0fdf4;}
+  .logo-text span{font-size:12px;color:#4ade80;font-weight:500;}
+  .week-pill{background:rgba(22,163,74,0.15);border:1px solid rgba(22,163,74,0.25);border-radius:20px;padding:6px 16px;font-size:13px;color:#4ade80;font-weight:600;}
+
+  /* Tabs */
+  .tabs{display:flex;gap:4px;margin-bottom:1.5rem;background:rgba(255,255,255,0.04);border-radius:12px;padding:4px;width:fit-content;}
+  .tab{padding:8px 20px;font-size:13px;font-weight:600;border-radius:10px;cursor:pointer;color:#6b7280;transition:all 0.2s;}
+  .tab.active{background:rgba(22,163,74,0.2);color:#4ade80;}
+
+  /* Leaderboard list */
+  #lb-wrap{flex:1;overflow-y:auto;}
+  #lb-wrap::-webkit-scrollbar{width:4px;}
+  #lb-wrap::-webkit-scrollbar-track{background:transparent;}
+  #lb-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px;}
+
+  .lb-row{display:flex;align-items:center;gap:16px;padding:14px 16px;border-radius:16px;margin-bottom:8px;transition:all 0.3s;}
+  .lb-row.top1{background:linear-gradient(135deg,rgba(251,191,36,0.12),rgba(249,115,22,0.08));border:1px solid rgba(251,191,36,0.2);}
+  .lb-row.top2{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);}
+  .lb-row.top3{background:linear-gradient(135deg,rgba(220,38,38,0.08),rgba(249,115,22,0.05));border:1px solid rgba(249,115,22,0.15);}
+  .lb-row.rest{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);}
+
+  .rank-badge{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;flex-shrink:0;}
+  .rank-badge.gold{background:linear-gradient(135deg,#fbbf24,#f97316);}
+  .rank-badge.silver{background:rgba(255,255,255,0.12);}
+  .rank-badge.bronze{background:linear-gradient(135deg,#f97316,#dc2626);}
+  .rank-badge.rest{background:rgba(255,255,255,0.06);color:#6b7280;font-size:14px;}
+
+  .lb-name{flex:1;font-size:17px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .lb-name.top1{color:#fbbf24;}
+  .lb-name.top2{color:#f0fdf4;}
+  .lb-name.top3{color:#fb923c;}
+  .lb-name.rest{color:#9ca3af;}
+
+  .lb-score-wrap{text-align:right;}
+  .lb-score{font-size:22px;font-weight:800;}
+  .lb-score.top1{color:#fbbf24;}
+  .lb-score.top2{color:#f0fdf4;}
+  .lb-score.top3{color:#fb923c;}
+  .lb-score.rest{color:#6b7280;}
+  .lb-sub{font-size:11px;color:#374151;}
+
+  .lb-bar-wrap{width:80px;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;}
+  .lb-bar{height:100%;border-radius:3px;background:linear-gradient(90deg,#16a34a,#4ade80);}
+
+  #lb-empty{text-align:center;padding:4rem 0;color:#374151;font-size:15px;}
+
+  /* Footer */
+  .footer{margin-top:auto;padding-top:1rem;display:flex;align-items:center;justify-content:space-between;}
+  .live-dot{display:inline-block;width:8px;height:8px;background:#22c55e;border-radius:50%;margin-right:6px;animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+  .live-txt{font-size:12px;color:#374151;}
+
+  /* RIGHT */
+  #right{padding:2.5rem 2rem;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;}
+
+  .scan-label{font-size:13px;font-weight:600;color:#4ade80;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:0.75rem;}
+  .qr-frame{background:#fff;border-radius:20px;padding:12px;margin-bottom:1rem;box-shadow:0 8px 40px rgba(0,0,0,0.4);}
+  .qr-frame img{width:200px;height:200px;display:block;border-radius:10px;}
+  .quiz-url{font-size:11px;color:#4b5563;word-break:break-all;margin-bottom:2rem;line-height:1.6;}
+
+  .stat-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:1.25rem;width:100%;margin-bottom:0.75rem;}
+  .stat-val{font-size:28px;font-weight:800;color:#4ade80;}
+  .stat-lbl{font-size:11px;color:#4b5563;margin-top:2px;font-weight:500;}
+
+  .rules{background:rgba(22,163,74,0.06);border:1px solid rgba(22,163,74,0.12);border-radius:14px;padding:1rem;width:100%;text-align:left;}
+  .rule{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#6b7280;line-height:1.5;margin-bottom:6px;}
+  .rule:last-child{margin-bottom:0;}
 </style>
 </head>
 <body>
+<div id="app">
 
-<!-- LEFT: LEADERBOARD -->
-<div id="left">
-  <h1>🏆 Leaderboard</h1>
-  <div id="week-label"></div>
-  <div class="tab-bar">
-    <div class="tab active" id="tab-week" onclick="switchTab('week')">This week</div>
-    <div class="tab" id="tab-all" onclick="switchTab('all')">All time</div>
-  </div>
-  <div id="lb-list">
-    <div id="lb-empty" style="display:none;">No scores yet this week.<br>Be the first to play!</div>
-    <div id="lb-rows"></div>
-  </div>
-  <div id="lb-updated"><span id="live-dot"></span> Live — refreshes every 15s</div>
-</div>
+  <!-- LEFT: LEADERBOARD -->
+  <div id="left" class="bg-left">
+    <svg class="wave-bg" viewBox="0 0 1000 200" preserveAspectRatio="none"><path fill="#16a34a" d="M0,100 C250,180 500,20 750,100 C875,140 950,80 1000,100 L1000,200 L0,200 Z"/></svg>
 
-<!-- RIGHT: QR + stats -->
-<div id="right">
-  <h2>Scan to play!</h2>
-  <p>Open the quiz on your phone,<br>answer 10 questions and<br>claim your spot on the board.</p>
+    <div class="header">
+      <div class="logo">
+        <div class="logo-icon">🍜</div>
+        <div class="logo-text">
+          <strong>Hawaiian Poke Bowl</strong>
+          <span>Office Quiz — Weekly Leaderboard</span>
+        </div>
+      </div>
+      <div class="week-pill" id="week-pill"></div>
+    </div>
 
-  <!-- QR code — generated from quiz URL -->
-  <img id="qr-img" src="" alt="QR code to quiz"/>
-  <div id="quiz-url">Loading URL…</div>
+    <div class="tabs">
+      <div class="tab active" id="tab-week" onclick="switchTab('week')">🏆 This Week</div>
+      <div class="tab" id="tab-all" onclick="switchTab('all')">⭐ All Time</div>
+    </div>
 
-  <div class="stat">
-    <div class="stat-val" id="stat-players">—</div>
-    <div class="stat-lbl">Players this week</div>
+    <div id="lb-wrap">
+      <div id="lb-empty" style="display:none;">🌊 No scores yet this week.<br>Scan the QR code to be first!</div>
+      <div id="lb-rows"></div>
+    </div>
+
+    <div class="footer">
+      <span class="live-txt"><span class="live-dot"></span>Live · refreshes every 15s</span>
+      <span style="font-size:12px;color:#374151;" id="last-updated"></span>
+    </div>
   </div>
-  <div class="stat">
-    <div class="stat-val" id="stat-top">—</div>
-    <div class="stat-lbl">Top score this week</div>
+
+  <!-- RIGHT: QR + STATS -->
+  <div id="right" class="bg-right">
+    <div style="width:100%;">
+      <div class="scan-label">📱 Scan to play</div>
+      <div class="qr-frame">
+        <img id="qr-img" src="" alt="QR code"/>
+      </div>
+      <div class="quiz-url" id="quiz-url-txt"></div>
+    </div>
+
+    <div style="width:100%;">
+      <div class="stat-card">
+        <div class="stat-val" id="stat-players">—</div>
+        <div class="stat-lbl">Players this week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="stat-top">—</div>
+        <div class="stat-lbl">Top score this week</div>
+      </div>
+    </div>
+
+    <div class="rules">
+      <div class="rule">🎯 <span>10 random questions every round</span></div>
+      <div class="rule">🔒 <span>One attempt per week per person</span></div>
+      <div class="rule">⏱️ <span>20 seconds per question</span></div>
+      <div class="rule">🏆 <span>Leaderboard resets every Monday</span></div>
+    </div>
   </div>
+
 </div>
 
 <script>
-// ── CONFIG ───────────────────────────────────────────────────
-// Set this to the URL where quiz.html is hosted
-var QUIZ_URL = 'https://mohamed-hawaiian.github.io/Support-Office/quiz.html';
+// ── CONFIG — change this to your quiz URL ─────────────────────
+var QUIZ_URL='https://mohamed-hawaiian.github.io/Support-Office/quiz.html';
 // ─────────────────────────────────────────────────────────────
 
-var DB_PREFIX = 'quizapp_'; // must match quiz.html
-function dbKey(k){return DB_PREFIX+k;}
-function lsGet(k){try{var v=localStorage.getItem(dbKey(k));return v?JSON.parse(v):null;}catch(e){return null;}}
-
+var DB='hpb_quiz_';
+function lsGet(k){try{var v=localStorage.getItem(DB+k);return v?JSON.parse(v):null;}catch(e){return null;}}
 function getWeekKey(){var n=new Date(),j=new Date(n.getFullYear(),0,1),w=Math.ceil(((n-j)/86400000+j.getDay()+1)/7);return 'w'+n.getFullYear()+'-'+w;}
-function getWeekLabel(){var n=new Date(),d=new Date(n);d.setDate(d.getDate()-d.getDay()+1);var e=new Date(d);e.setDate(e.getDate()+6);return 'Week of '+d.toLocaleDateString('en-GB',{day:'numeric',month:'long'})+' – '+e.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});}
+function getWeekLabel(){var n=new Date(),d=new Date(n);var day=d.getDay();var diff=d.getDate()-day+(day===0?-6:1);d.setDate(diff);var e=new Date(d);e.setDate(e.getDate()+6);return d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' – '+e.toLocaleDateString('en-GB',{day:'numeric',month:'short'});}
 
 var currentTab='week';
 function switchTab(t){
@@ -100,42 +179,60 @@ function switchTab(t){
 
 function renderLB(){
   var wk=getWeekKey();
-  document.getElementById('week-label').textContent=currentTab==='week'?getWeekLabel():'All-time best scores';
-  var data=currentTab==='week'?lsGet('lb_week_'+wk):lsGet('lb_all');
+  document.getElementById('week-pill').textContent=getWeekLabel();
+  var raw=currentTab==='week'?lsGet('lb_'+wk):lsGet('lb_all');
   var rows=document.getElementById('lb-rows');
   var empty=document.getElementById('lb-empty');
-  if(!data||Object.keys(data).length===0){rows.innerHTML='';empty.style.display='block';document.getElementById('stat-players').textContent='0';document.getElementById('stat-top').textContent='—';return;}
+
+  if(!raw||Object.keys(raw).length===0){
+    rows.innerHTML='';empty.style.display='block';
+    document.getElementById('stat-players').textContent='0';
+    document.getElementById('stat-top').textContent='—';
+    return;
+  }
   empty.style.display='none';
-  var entries=Object.keys(data).map(function(n){return{name:n,score:data[n]};}).sort(function(a,b){return b.score-a.score;});
-  if(currentTab==='week'){document.getElementById('stat-players').textContent=entries.length;document.getElementById('stat-top').textContent=entries[0].score+' / 10';}
+
+  var entries=Object.keys(raw).map(function(n){return{name:n,score:raw[n]};}).sort(function(a,b){return b.score-a.score;});
+  var topScore=entries[0].score;
+
+  if(currentTab==='week'){
+    document.getElementById('stat-players').textContent=entries.length;
+    document.getElementById('stat-top').textContent=topScore+' / 10';
+  }
+
   var medals=['🥇','🥈','🥉'];
-  var rowClasses=['top1','top2','top3'];
+  var rankClasses=['top1','top2','top3'];
+  var nameClasses=['top1','top2','top3'];
   var html='';
+
   for(var i=0;i<entries.length;i++){
     var e=entries[i];
-    var rc=i<3?rowClasses[i]:'';
-    var med=i<3?medals[i]:'#'+(i+1);
+    var rc=i<3?rankClasses[i]:'rest';
+    var nc=i<3?nameClasses[i]:'rest';
+    var sc2=i<3?rankClasses[i]:'rest';
+    var rankHTML=i<3?medals[i]:('#'+(i+1));
+    var badgeCls=i<3?['gold','silver','bronze'][i]:'rest';
+    var barPct=Math.round((e.score/10)*100);
+
     html+='<div class="lb-row '+rc+'">';
-    html+='<div class="rank">'+med+'</div>';
-    html+='<div class="lb-name">'+e.name+'</div>';
-    html+='<div class="lb-score">'+e.score+' <span class="lb-sub">/ 10</span></div>';
+    html+='<div class="rank-badge '+badgeCls+'">'+rankHTML+'</div>';
+    html+='<div class="lb-name '+nc+'">'+e.name+'</div>';
+    html+='<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">';
+    html+='<div class="lb-bar-wrap"><div class="lb-bar" style="width:'+barPct+'%;background:'+(i===0?'linear-gradient(90deg,#fbbf24,#f97316)':i===1?'linear-gradient(90deg,#e5e7eb,#9ca3af)':i===2?'linear-gradient(90deg,#f97316,#dc2626)':'linear-gradient(90deg,#16a34a,#4ade80)')+'"></div></div>';
+    html+='<div class="lb-score-wrap"><span class="lb-score '+sc2+'">'+e.score+'</span><span class="lb-sub"> / 10</span></div>';
+    html+='</div>';
     html+='</div>';
   }
   rows.innerHTML=html;
+  document.getElementById('last-updated').textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
 }
 
-// ── QR CODE via free API ──────────────────────────────────────
-function setupQR(){
-  var url=QUIZ_URL;
-  var qrSrc='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(url);
-  document.getElementById('qr-img').src=qrSrc;
-  document.getElementById('quiz-url').textContent=url;
-}
+// QR code
+document.getElementById('qr-img').src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=0a1a0f&bgcolor=ffffff&data='+encodeURIComponent(QUIZ_URL);
+document.getElementById('quiz-url-txt').textContent=QUIZ_URL;
 
-// ── Init ──────────────────────────────────────────────────────
-setupQR();
 renderLB();
-setInterval(renderLB, 15000);
+setInterval(renderLB,15000);
 </script>
 </body>
 </html>
