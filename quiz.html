@@ -5,116 +5,122 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Hawaiian Poke Bowl — Office Quiz</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'Poppins',system-ui,sans-serif;background:#faf8f3;color:#2c3e2d;min-height:100vh;}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Poppins',system-ui,sans-serif;background:#fdf8ee;color:#2a0a0a;min-height:100vh;}
 
-  .wrap{padding:1.25rem;max-width:480px;margin:0 auto;}
+/* Decorative background */
+.bg-deco{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.bg-deco svg{position:absolute;bottom:0;left:0;width:100%;opacity:0.07;}
 
-  /* Logo */
-  .logo{display:flex;align-items:center;gap:10px;margin-bottom:1.25rem;padding-top:0.5rem;}
-  .logo-icon{width:42px;height:42px;background:linear-gradient(135deg,#2d7a4f,#e07a54);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 12px rgba(45,122,79,0.25);}
-  .logo-text strong{font-size:13px;font-weight:700;color:#2c3e2d;display:block;}
-  .logo-text span{font-size:11px;color:#2d7a4f;font-weight:500;}
+.wrap{position:relative;z-index:1;padding:1.25rem;max-width:480px;margin:0 auto;}
 
-  /* Screens */
-  .screen{display:none;}
-  .screen.active{display:block;}
+/* Logo */
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;padding-top:0.5rem;}
+.logo-img{height:36px;}
+.logo-title{font-size:18px;font-weight:800;color:#3d0c0c;letter-spacing:-0.5px;}
+.logo-sub{font-size:11px;color:#a0522d;font-weight:500;}
 
-  /* Cards */
-  .card{background:#fff;border:1px solid #e8e2d8;border-radius:20px;padding:1.5rem;margin-bottom:1rem;box-shadow:0 2px 12px rgba(44,62,45,0.06);}
+/* Screens */
+.screen{display:none;}
+.screen.active{display:block;}
 
-  /* Buttons */
-  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;font-size:15px;font-weight:600;border:none;border-radius:14px;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.2s;}
-  .btn-primary{background:#2d7a4f;color:#fff;box-shadow:0 4px 14px rgba(45,122,79,0.3);}
-  .btn-primary:hover{background:#235f3d;transform:translateY(-1px);}
-  .btn-ghost{background:#f5f0e8;color:#2c3e2d;border:1px solid #e8e2d8;}
-  .btn-ghost:hover{background:#ede7db;}
+/* Cards */
+.card{background:#fffdf7;border:1px solid #ede0c4;border-radius:20px;padding:1.5rem;margin-bottom:1rem;box-shadow:0 2px 16px rgba(60,20,0,0.06);}
 
-  /* Input */
-  .inp{width:100%;padding:13px 16px;font-size:15px;border:1.5px solid #e8e2d8;border-radius:14px;background:#faf8f3;color:#2c3e2d;outline:none;font-family:'Poppins',sans-serif;transition:border-color 0.2s;}
-  .inp:focus{border-color:#2d7a4f;background:#fff;}
-  .inp::placeholder{color:#b0bdb1;}
+/* Buttons */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;font-size:15px;font-weight:700;border:none;border-radius:14px;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.18s;letter-spacing:0.01em;}
+.btn-primary{background:#3d0c0c;color:#fdf8ee;}
+.btn-primary:hover{background:#5a1414;transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:#3d0c0c;border:1.5px solid #ede0c4;}
+.btn-ghost:hover{background:#f5ede0;}
 
-  /* Badge */
-  .badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:4px 10px;border-radius:20px;font-weight:600;}
-  .badge-green{background:#e8f5ed;color:#2d7a4f;border:1px solid #c6e6d2;}
-  .badge-orange{background:#fdf0ea;color:#e07a54;border:1px solid #f5c9b3;}
-  .badge-blue{background:#eaf3fb;color:#3a7fb5;border:1px solid #b8d8f0;}
-  .badge-gray{background:#f5f0e8;color:#7a8c7b;border:1px solid #e0d8cc;}
+/* Input */
+.inp{width:100%;padding:13px 16px;font-size:15px;border:1.5px solid #ede0c4;border-radius:14px;background:#fdf8ee;color:#2a0a0a;outline:none;font-family:'Poppins',sans-serif;transition:border-color 0.2s;}
+.inp:focus{border-color:#3d0c0c;background:#fff;}
+.inp::placeholder{color:#c4a882;}
 
-  /* Timer */
-  .tbar{height:6px;background:#f0ebe2;border-radius:3px;margin-bottom:1.25rem;overflow:hidden;}
-  .tfill{height:100%;border-radius:3px;transition:width 1s linear;background:linear-gradient(90deg,#2d7a4f,#4ade80);}
-  .tfill.low{background:linear-gradient(90deg,#c0392b,#e07a54);}
+/* Badges */
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:4px 10px;border-radius:20px;font-weight:600;}
+.badge-brown{background:#f5ede0;color:#7a3b1e;border:1px solid #e8d0b0;}
+.badge-green{background:#eaf5ec;color:#2d6a3f;border:1px solid #b8dfc2;}
+.badge-warm{background:#fff3e0;color:#b35c00;border:1px solid #f5d4a0;}
 
-  /* Progress dots */
-  .dots{display:flex;gap:5px;justify-content:center;margin-bottom:1rem;flex-wrap:wrap;}
-  .dot{width:9px;height:9px;border-radius:50%;background:#e8e2d8;}
-  .dot.ok{background:#2d7a4f;}
-  .dot.no{background:#c0392b;}
-  .dot.cur{background:#e07a54;box-shadow:0 0 0 3px rgba(224,122,84,0.2);}
+/* Timer */
+.tbar{height:6px;background:#ede0c4;border-radius:3px;margin-bottom:1.25rem;overflow:hidden;}
+.tfill{height:100%;border-radius:3px;background:#3d0c0c;transition:width 1s linear;}
+.tfill.low{background:#c0392b;}
 
-  /* MC options */
-  .mc-opt{width:100%;text-align:left;padding:12px 16px;font-size:14px;font-weight:500;border:1.5px solid #e8e2d8;border-radius:14px;background:#faf8f3;color:#2c3e2d;cursor:pointer;margin-bottom:8px;transition:all 0.15s;font-family:'Poppins',sans-serif;line-height:1.4;}
-  .mc-opt:hover:not(:disabled){border-color:#2d7a4f;background:#f0f8f4;}
-  .mc-opt.ok{background:#e8f5ed;border-color:#2d7a4f;color:#1a5c35;}
-  .mc-opt.no{background:#fdecea;border-color:#c0392b;color:#922b21;}
-  .mc-opt:disabled{cursor:default;}
+/* Progress dots */
+.dots{display:flex;gap:5px;justify-content:center;margin-bottom:1rem;flex-wrap:wrap;}
+.dot{width:9px;height:9px;border-radius:50%;background:#ede0c4;}
+.dot.ok{background:#2d6a3f;}
+.dot.no{background:#c0392b;}
+.dot.cur{background:#a0522d;box-shadow:0 0 0 3px rgba(160,82,45,0.2);}
 
-  /* Feedback */
-  .fb{margin-top:0.75rem;padding:12px 16px;border-radius:14px;font-size:13px;line-height:1.6;}
-  .fb.ok{background:#e8f5ed;border:1px solid #c6e6d2;color:#1a5c35;}
-  .fb.no{background:#fdecea;border:1px solid #f5b7b1;color:#922b21;}
+/* MC options */
+.mc-opt{width:100%;text-align:left;padding:12px 16px;font-size:14px;font-weight:500;border:1.5px solid #ede0c4;border-radius:14px;background:#fdf8ee;color:#2a0a0a;cursor:pointer;margin-bottom:8px;transition:all 0.15s;font-family:'Poppins',sans-serif;line-height:1.4;}
+.mc-opt:hover:not(:disabled){border-color:#3d0c0c;background:#f5ede0;}
+.mc-opt.ok{background:#eaf5ec;border-color:#2d6a3f;color:#1a4a28;}
+.mc-opt.no{background:#fdecea;border-color:#c0392b;color:#7b1a14;}
+.mc-opt:disabled{cursor:default;}
 
-  /* Score */
-  .score-big{font-size:60px;font-weight:800;text-align:center;color:#2d7a4f;margin:0.5rem 0;}
+/* Feedback */
+.fb{margin-top:0.75rem;padding:12px 16px;border-radius:14px;font-size:13px;line-height:1.6;}
+.fb.ok{background:#eaf5ec;border:1px solid #b8dfc2;color:#1a4a28;}
+.fb.no{background:#fdecea;border:1px solid #f5b7b1;color:#7b1a14;}
 
-  /* Stat cards */
-  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem;}
-  .stat{background:#faf8f3;border:1px solid #e8e2d8;border-radius:14px;padding:0.75rem;text-align:center;}
-  .stat-val{font-size:20px;font-weight:700;color:#2c3e2d;}
-  .stat-lbl{font-size:10px;color:#b0bdb1;margin-top:2px;}
+/* Score */
+.score-big{font-size:64px;font-weight:800;text-align:center;color:#3d0c0c;margin:0.5rem 0;}
 
-  .pill-row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:0.75rem 0 1.25rem;}
-  .err{color:#c0392b;font-size:13px;margin-top:6px;display:none;}
-  .loading-txt{text-align:center;padding:4rem 0;color:#b0bdb1;font-size:14px;}
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem;}
+.stat{background:#fdf8ee;border:1px solid #ede0c4;border-radius:14px;padding:0.75rem;text-align:center;}
+.stat-val{font-size:20px;font-weight:700;color:#2a0a0a;}
+.stat-lbl{font-size:10px;color:#c4a882;margin-top:2px;}
 
-  /* Hero */
-  .hero{text-align:center;padding:1.25rem 0 0.75rem;}
-  .hero h1{font-size:22px;font-weight:800;color:#2c3e2d;margin-bottom:0.25rem;}
-  .hero p{font-size:13px;color:#7a8c7b;line-height:1.6;}
-
-  /* Decorative wave */
-  .wave-top{width:100%;height:60px;margin-bottom:0.5rem;}
+.pill-row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:0.75rem 0 1.25rem;}
+.err{color:#c0392b;font-size:13px;margin-top:6px;display:none;}
+.loading-txt{text-align:center;padding:4rem 0;color:#c4a882;font-size:14px;}
+.hero{text-align:center;padding:1.25rem 0 0.75rem;}
+.hero h1{font-size:22px;font-weight:800;color:#3d0c0c;margin-bottom:0.25rem;}
+.hero p{font-size:13px;color:#a07850;line-height:1.7;}
 </style>
 </head>
 <body>
-<div class="wrap">
 
+<!-- Background decoration -->
+<div class="bg-deco">
+  <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20,280 Q80,200 60,120 Q40,40 120,20 Q160,10 140,80 Q120,150 180,160 Q240,170 220,240 Q200,300 20,280Z" fill="#a0522d"/>
+    <path d="M300,290 Q360,220 340,140 Q320,60 380,30 Q400,20 395,90 Q390,160 350,180 Q310,200 320,260 Q330,300 300,290Z" fill="#a0522d"/>
+    <circle cx="200" cy="30" r="60" fill="#a0522d" opacity="0.5"/>
+  </svg>
+</div>
+
+<div class="wrap">
   <!-- LOGO -->
   <div class="logo">
-    <div class="logo-icon">🍜</div>
-    <div class="logo-text">
-      <strong>Hawaiian Poke Bowl</strong>
-      <span>Office Quiz</span>
+    <div>
+      <div class="logo-title">Hawaiian</div>
+      <div class="logo-sub">POKE BOWL · Office Quiz</div>
     </div>
   </div>
 
   <!-- NAME SCREEN -->
   <div class="screen active" id="s-name">
     <div class="hero">
-      <div style="font-size:48px;margin-bottom:0.5rem;">🏆</div>
+      <div style="font-size:52px;margin-bottom:0.5rem;">🏆</div>
       <h1>Who's the Smartest?</h1>
-      <p>Everyone answers the same 10 questions.<br>Best score wins the weekly trophy!</p>
+      <p>Everyone plays the same 10 questions.<br>Best score wins the weekly trophy!</p>
     </div>
     <div class="pill-row">
-      <span class="badge badge-green">🌍 Same questions for all</span>
-      <span class="badge badge-orange">🔒 1× per week</span>
-      <span class="badge badge-blue">⏱️ 20s per question</span>
+      <span class="badge badge-brown">🌍 Same questions for all</span>
+      <span class="badge badge-green">🔒 1× per week</span>
+      <span class="badge badge-warm">⏱️ 20s per question</span>
     </div>
     <div class="card">
-      <label style="font-size:12px;color:#b0bdb1;font-weight:600;display:block;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;">Your name</label>
+      <label style="font-size:11px;color:#c4a882;font-weight:700;display:block;margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em;">Your name</label>
       <input class="inp" id="nameInp" type="text" placeholder="Enter your name…" maxlength="30"/>
       <div class="err" id="name-err">Please enter your name first.</div>
       <button class="btn btn-primary" onclick="goStart()" style="margin-top:12px;">🎯 Start Quiz</button>
@@ -124,22 +130,22 @@
   <!-- ALREADY PLAYED -->
   <div class="screen" id="s-played">
     <div class="card" style="text-align:center;padding:2rem;">
-      <div style="font-size:48px;margin-bottom:0.75rem;">🔒</div>
-      <h2 style="font-size:18px;font-weight:700;margin-bottom:0.5rem;">Already played this week!</h2>
-      <p style="font-size:13px;color:#7a8c7b;margin-bottom:1.5rem;">You can play again next Monday.<br>Check the office screen to see your ranking!</p>
-      <div style="background:#e8f5ed;border:1px solid #c6e6d2;border-radius:14px;padding:1.25rem;margin-bottom:1rem;">
-        <div style="font-size:11px;color:#7a8c7b;margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;">Your score this week</div>
-        <div style="font-size:40px;font-weight:800;color:#2d7a4f;" id="played-score">—</div>
-        <div style="font-size:12px;color:#7a8c7b;">out of 10</div>
+      <div style="font-size:52px;margin-bottom:0.75rem;">🔒</div>
+      <h2 style="font-size:18px;font-weight:700;margin-bottom:0.5rem;color:#3d0c0c;">Already played this week!</h2>
+      <p style="font-size:13px;color:#a07850;margin-bottom:1.5rem;">You can play again next Monday.<br>Check the office screen to see your ranking!</p>
+      <div style="background:#f5ede0;border:1px solid #ede0c4;border-radius:14px;padding:1.25rem;margin-bottom:1rem;">
+        <div style="font-size:11px;color:#a07850;margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;font-weight:600;">Your score this week</div>
+        <div style="font-size:48px;font-weight:800;color:#3d0c0c;" id="played-score">—</div>
+        <div style="font-size:12px;color:#a07850;">out of 10</div>
       </div>
-      <p style="font-size:12px;color:#b0bdb1;">🗓️ Resets every Monday</p>
+      <p style="font-size:12px;color:#c4a882;">🗓️ Resets every Monday</p>
     </div>
   </div>
 
   <!-- LOADING -->
   <div class="screen" id="s-load">
     <div class="loading-txt">
-      <div style="font-size:36px;margin-bottom:1rem;">🌺</div>
+      <div style="font-size:40px;margin-bottom:1rem;">🌺</div>
       Loading this week's questions…
     </div>
   </div>
@@ -147,35 +153,35 @@
   <!-- QUESTION -->
   <div class="screen" id="s-q">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;">
-      <span id="qcnt" style="font-size:12px;color:#7a8c7b;font-weight:500;"></span>
-      <span class="badge badge-gray" id="qcat"></span>
+      <span id="qcnt" style="font-size:12px;color:#a07850;font-weight:600;"></span>
+      <span class="badge badge-brown" id="qcat"></span>
     </div>
     <div class="dots" id="qdots"></div>
     <div class="tbar"><div class="tfill" id="tfill" style="width:100%"></div></div>
     <div class="card">
-      <p id="qtxt" style="font-size:15px;font-weight:600;color:#2c3e2d;margin-bottom:0.75rem;line-height:1.5;"></p>
+      <p id="qtxt" style="font-size:15px;font-weight:600;color:#2a0a0a;margin-bottom:0.75rem;line-height:1.5;"></p>
       <div id="qarea"></div>
       <div id="qfb" class="fb" style="display:none;"></div>
     </div>
     <div id="qnext" style="display:none;">
-      <button class="btn btn-ghost" onclick="nextQ()">Next →</button>
+      <button class="btn btn-ghost" onclick="nextQ()">Next question →</button>
     </div>
   </div>
 
   <!-- RESULTS -->
   <div class="screen" id="s-res">
     <div class="card" style="text-align:center;padding:2rem 1.5rem;">
-      <div id="res-emoji" style="font-size:44px;margin-bottom:0.5rem;"></div>
-      <p style="font-size:13px;color:#7a8c7b;margin-bottom:0.25rem;">Well done, <strong id="res-name" style="color:#2c3e2d;"></strong>!</p>
+      <div id="res-emoji" style="font-size:48px;margin-bottom:0.5rem;"></div>
+      <p style="font-size:13px;color:#a07850;margin-bottom:0.25rem;">Well done, <strong id="res-name" style="color:#3d0c0c;"></strong>!</p>
       <div class="score-big" id="fscore"></div>
-      <p id="res-verdict" style="font-size:13px;color:#7a8c7b;margin-bottom:1.25rem;"></p>
+      <p id="res-verdict" style="font-size:13px;color:#a07850;margin-bottom:1.25rem;"></p>
       <div class="stats">
-        <div class="stat"><div class="stat-val" style="color:#2d7a4f;" id="rc"></div><div class="stat-lbl">Correct</div></div>
+        <div class="stat"><div class="stat-val" style="color:#2d6a3f;" id="rc"></div><div class="stat-lbl">Correct</div></div>
         <div class="stat"><div class="stat-val" style="color:#c0392b;" id="rw"></div><div class="stat-lbl">Wrong</div></div>
-        <div class="stat"><div class="stat-val" style="color:#e07a54;" id="rv"></div><div class="stat-lbl">Rating</div></div>
+        <div class="stat"><div class="stat-val" style="color:#a0522d;" id="rv"></div><div class="stat-lbl">Rating</div></div>
       </div>
-      <div id="save-status" style="font-size:12px;color:#7a8c7b;margin-bottom:1rem;min-height:20px;"></div>
-      <div style="background:#f5f0e8;border-radius:12px;padding:0.75rem;font-size:12px;color:#7a8c7b;line-height:1.7;">
+      <div id="save-status" style="font-size:12px;color:#a07850;margin-bottom:1rem;min-height:20px;"></div>
+      <div style="background:#f5ede0;border-radius:12px;padding:0.75rem;font-size:12px;color:#a07850;line-height:1.8;">
         📺 Check the office screen for the leaderboard!<br>
         🔒 You can play again next Monday.
       </div>
@@ -184,18 +190,79 @@
 
 </div>
 <script>
-// ════════════════════════════════════════════════════
-// ⚙️  CONFIG — paste your Firebase Realtime DB URL
-var FIREBASE = 'https://hpb-so-quiz-default-rtdb.europe-west1.firebasedatabase.app/';
-// ════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
+var FIREBASE='https://hpb-so-quiz-default-rtdb.europe-west1.firebasedatabase.app';
+// ══════════════════════════════════════════════════
 
-var qs=[], cur=0, sc=0, results=[], tiv=null, tl=0, done=false, playerName='', safeName='';
+// ── Curated question bank (50 questions, varied topics) ──
+var BANK=[
+  {cat:"Science",q:"What is the chemical symbol for gold?",opts:["Go","Gd","Au","Ag"],ans:"Au"},
+  {cat:"Science",q:"How many bones does an adult human body have?",opts:["186","206","226","246"],ans:"206"},
+  {cat:"Science",q:"What planet is closest to the Sun?",opts:["Venus","Earth","Mars","Mercury"],ans:"Mercury"},
+  {cat:"Science",q:"What gas do plants absorb from the air?",opts:["Oxygen","Nitrogen","Carbon dioxide","Hydrogen"],ans:"Carbon dioxide"},
+  {cat:"Science",q:"How many chambers does a human heart have?",opts:["2","3","4","5"],ans:"4"},
+  {cat:"Science",q:"What is the hardest natural substance on Earth?",opts:["Gold","Iron","Diamond","Quartz"],ans:"Diamond"},
+  {cat:"Science",q:"What is the speed of light (approx.)?",opts:["200,000 km/s","300,000 km/s","400,000 km/s","500,000 km/s"],ans:"300,000 km/s"},
+  {cat:"Science",q:"Which planet has the most moons?",opts:["Jupiter","Saturn","Uranus","Neptune"],ans:"Saturn"},
+  {cat:"History",q:"In which year did World War II end?",opts:["1943","1944","1945","1946"],ans:"1945"},
+  {cat:"History",q:"Who was the first person to walk on the Moon?",opts:["Buzz Aldrin","Yuri Gagarin","Neil Armstrong","John Glenn"],ans:"Neil Armstrong"},
+  {cat:"History",q:"In which city was the Titanic built?",opts:["Liverpool","London","Dublin","Belfast"],ans:"Belfast"},
+  {cat:"History",q:"Who painted the Mona Lisa?",opts:["Michelangelo","Raphael","Leonardo da Vinci","Caravaggio"],ans:"Leonardo da Vinci"},
+  {cat:"History",q:"Which empire was ruled by Julius Caesar?",opts:["Greek","Ottoman","Roman","Byzantine"],ans:"Roman"},
+  {cat:"History",q:"In which year did the Berlin Wall fall?",opts:["1987","1988","1989","1990"],ans:"1989"},
+  {cat:"History",q:"Who was the first female Prime Minister of the UK?",opts:["Queen Elizabeth II","Margaret Thatcher","Theresa May","Angela Merkel"],ans:"Margaret Thatcher"},
+  {cat:"Geography",q:"What is the capital of Australia?",opts:["Sydney","Melbourne","Brisbane","Canberra"],ans:"Canberra"},
+  {cat:"Geography",q:"Which is the longest river in the world?",opts:["Amazon","Congo","Nile","Yangtze"],ans:"Nile"},
+  {cat:"Geography",q:"What is the smallest country in the world?",opts:["Monaco","San Marino","Liechtenstein","Vatican City"],ans:"Vatican City"},
+  {cat:"Geography",q:"On which continent is the Sahara Desert?",opts:["Asia","Australia","South America","Africa"],ans:"Africa"},
+  {cat:"Geography",q:"What is the capital of Japan?",opts:["Osaka","Kyoto","Tokyo","Hiroshima"],ans:"Tokyo"},
+  {cat:"Geography",q:"Which country has the most natural lakes?",opts:["Russia","USA","Finland","Canada"],ans:"Canada"},
+  {cat:"Geography",q:"What is the tallest mountain in the world?",opts:["K2","Mont Blanc","Everest","Kilimanjaro"],ans:"Everest"},
+  {cat:"Sport",q:"How many players are on a soccer team on the field?",opts:["9","10","11","12"],ans:"11"},
+  {cat:"Sport",q:"Which country has won the most FIFA World Cups?",opts:["Germany","Argentina","Italy","Brazil"],ans:"Brazil"},
+  {cat:"Sport",q:"How many Grand Slam tennis tournaments are there per year?",opts:["2","3","4","5"],ans:"4"},
+  {cat:"Sport",q:"In which sport would you perform a slam dunk?",opts:["Volleyball","Handball","Basketball","Water polo"],ans:"Basketball"},
+  {cat:"Sport",q:"How many players are on a basketball team on the court?",opts:["4","5","6","7"],ans:"5"},
+  {cat:"Music",q:"How many strings does a standard guitar have?",opts:["4","5","6","7"],ans:"6"},
+  {cat:"Music",q:"Which band released the album 'Abbey Road'?",opts:["The Rolling Stones","The Beatles","Led Zeppelin","Pink Floyd"],ans:"The Beatles"},
+  {cat:"Music",q:"What nationality was Beethoven?",opts:["Austrian","French","Dutch","German"],ans:"German"},
+  {cat:"Music",q:"Which artist released the album 'Thriller'?",opts:["Prince","Michael Jackson","Stevie Wonder","James Brown"],ans:"Michael Jackson"},
+  {cat:"Film",q:"Who directed Jurassic Park (1993)?",opts:["James Cameron","George Lucas","Steven Spielberg","Ridley Scott"],ans:"Steven Spielberg"},
+  {cat:"Film",q:"Which film features a clownfish named Nemo?",opts:["Shark Tale","Finding Dory","Finding Nemo","The Little Mermaid"],ans:"Finding Nemo"},
+  {cat:"Film",q:"Who played Iron Man in the MCU?",opts:["Chris Evans","Chris Hemsworth","Mark Ruffalo","Robert Downey Jr."],ans:"Robert Downey Jr."},
+  {cat:"Film",q:"In which fictional city does Batman operate?",opts:["Metropolis","Gotham City","Star City","Central City"],ans:"Gotham City"},
+  {cat:"Food",q:"Which country is the origin of sushi?",opts:["China","Korea","Thailand","Japan"],ans:"Japan"},
+  {cat:"Food",q:"What is the main ingredient in guacamole?",opts:["Tomato","Avocado","Mango","Lime"],ans:"Avocado"},
+  {cat:"Food",q:"What type of pasta is shaped like small rice grains?",opts:["Fusilli","Penne","Orzo","Rigatoni"],ans:"Orzo"},
+  {cat:"Food",q:"What is the main ingredient in hummus?",opts:["Lentils","White beans","Chickpeas","Peas"],ans:"Chickpeas"},
+  {cat:"Literature",q:"Who wrote '1984'?",opts:["Aldous Huxley","George Orwell","Ray Bradbury","H.G. Wells"],ans:"George Orwell"},
+  {cat:"Literature",q:"What school does Harry Potter attend?",opts:["Beauxbatons","Durmstrang","Hogwarts","Ilvermorny"],ans:"Hogwarts"},
+  {cat:"Literature",q:"Which play features the line 'To be or not to be'?",opts:["Macbeth","Othello","King Lear","Hamlet"],ans:"Hamlet"},
+  {cat:"Literature",q:"Who wrote 'Pride and Prejudice'?",opts:["Emily Bronte","Charlotte Bronte","Mary Shelley","Jane Austen"],ans:"Jane Austen"},
+  {cat:"Technology",q:"What does HTTP stand for?",opts:["HyperText Transfer Protocol","High Transfer Text Program","Hyper Terminal Transfer Process","HyperText Transmission Path"],ans:"HyperText Transfer Protocol"},
+  {cat:"Technology",q:"What does CPU stand for?",opts:["Central Processing Unit","Computer Personal Unit","Core Processing Utility","Central Program Uploader"],ans:"Central Processing Unit"},
+  {cat:"Technology",q:"Which company created Android?",opts:["Apple","Microsoft","Google","Samsung"],ans:"Google"},
+  {cat:"Technology",q:"What does Wi-Fi use to transmit data?",opts:["Infrared light","Laser beams","Radio waves","Bluetooth pulses"],ans:"Radio waves"},
+  {cat:"Nature",q:"What is the largest mammal in the world?",opts:["African Elephant","Sperm Whale","Giant Squid","Blue Whale"],ans:"Blue Whale"},
+  {cat:"Nature",q:"How many legs does a spider have?",opts:["6","8","10","12"],ans:"8"},
+  {cat:"Maths",q:"What is the square root of 144?",opts:["11","12","13","14"],ans:"12"},
+];
+
+var qs=[],cur=0,sc=0,results=[],tiv=null,tl=0,done=false,playerName='',safeName='',weekStart=0;
 
 function getWeekKey(){var n=new Date(),j=new Date(n.getFullYear(),0,1),w=Math.ceil(((n-j)/86400000+j.getDay()+1)/7);return 'w'+n.getFullYear()+'-'+String(w).padStart(2,'0');}
-function decode(s){var t=document.createElement('textarea');t.innerHTML=s;return t.value;}
 function show(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById(id).classList.add('active');}
-function safe(name){return name.toLowerCase().replace(/[^a-z0-9]/g,'_');}
+function safe(n){return n.toLowerCase().replace(/[^a-z0-9]/g,'_');}
 function fb(path){return FIREBASE+'/quiz/'+path+'.json';}
+
+// Seeded shuffle — same result for same week seed
+function seededShuffle(arr,seed){
+  var a=arr.slice();
+  for(var i=a.length-1;i>0;i--){seed=(seed*9301+49297)%233280;var j=Math.floor((seed/233280)*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}
+  return a;
+}
+
+function getWeekSeed(wk){return wk.split('').reduce(function(a,c){return a+c.charCodeAt(0);},0)*137;}
 
 document.getElementById('nameInp').addEventListener('keydown',function(e){if(e.key==='Enter')goStart();});
 
@@ -203,11 +270,10 @@ async function goStart(){
   var n=document.getElementById('nameInp').value.trim();
   if(!n){document.getElementById('name-err').style.display='block';return;}
   document.getElementById('name-err').style.display='none';
-  playerName=n; safeName=safe(n);
+  playerName=n;safeName=safe(n);
   show('s-load');
-
+  var wk=getWeekKey();
   try{
-    var wk=getWeekKey();
     // Check if already played
     var pr=await fetch(fb('weeks/'+wk+'/scores/'+safeName));
     var existing=await pr.json();
@@ -215,71 +281,39 @@ async function goStart(){
       document.getElementById('played-score').textContent=existing.score;
       show('s-played');return;
     }
-    // Load or generate this week's questions
-    await loadWeeklyQuestions(wk);
+    // Generate this week's questions using seeded shuffle
+    var seed=getWeekSeed(wk);
+    var shuffled=seededShuffle(BANK,seed);
+    qs=shuffled.slice(0,10);
+    // Also shuffle each question's options with the same seed
+    qs=qs.map(function(q,i){
+      var s2=seed+(i*31);
+      return Object.assign({},q,{opts:seededShuffle(q.opts,s2)});
+    });
     cur=0;sc=0;results=[];
+    weekStart=Date.now();
     showQ();
   }catch(e){
-    // Fallback if Firebase not configured
-    loadFallback();
+    // Firebase not reachable — still play with local save
+    var seed2=getWeekSeed(wk);
+    var shuffled2=seededShuffle(BANK,seed2);
+    qs=shuffled2.slice(0,10);
+    qs=qs.map(function(q,i){var s2=seed2+(i*31);return Object.assign({},q,{opts:seededShuffle(q.opts,s2)});});
+    cur=0;sc=0;results=[];weekStart=Date.now();
+    showQ();
   }
-}
-
-async function loadWeeklyQuestions(wk){
-  // Try to get existing questions for this week
-  var r=await fetch(fb('weeks/'+wk+'/questions'));
-  var existing=await r.json();
-  if(existing&&Array.isArray(existing)&&existing.length===10){qs=existing;return;}
-
-  // First player this week — fetch from Open Trivia DB
-  var qr=await fetch('https://opentdb.com/api.php?amount=10&type=multiple');
-  var qdata=await qr.json();
-  if(qdata.response_code!==0) throw new Error('OTD error');
-
-  qs=qdata.results.map(function(q){
-    var incorrects=q.incorrect_answers.map(decode);
-    var correct=decode(q.correct_answer);
-    var opts=incorrects.concat([correct]);
-    // Seeded shuffle using week key
-    var seed=wk.split('').reduce(function(a,c){return a+c.charCodeAt(0);},0);
-    for(var i=opts.length-1;i>0;i--){seed=(seed*9301+49297)%233280;var j=Math.floor((seed/233280)*(i+1));var t=opts[i];opts[i]=opts[j];opts[j]=t;}
-    return{cat:decode(q.category).replace('Entertainment: ','').replace('Science: ',''),q:decode(q.question),opts:opts,ans:correct,diff:q.difficulty};
-  });
-
-  // Save to Firebase so everyone gets the same questions
-  await fetch(fb('weeks/'+wk+'/questions'),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(qs)});
-}
-
-function loadFallback(){
-  // Fallback built-in bank if Firebase not set up yet
-  var BANK=[
-    {cat:"Science",q:"What is the chemical symbol for gold?",opts:["Go","Gd","Au","Ag"],ans:"Au",diff:"easy"},
-    {cat:"History",q:"In which year did World War II end?",opts:["1943","1944","1945","1946"],ans:"1945",diff:"easy"},
-    {cat:"Geography",q:"What is the capital of Australia?",opts:["Sydney","Melbourne","Brisbane","Canberra"],ans:"Canberra",diff:"medium"},
-    {cat:"Science",q:"How many bones are in the adult human body?",opts:["206","215","198","223"],ans:"206",diff:"medium"},
-    {cat:"Sport",q:"Which country has won the most FIFA World Cups?",opts:["Germany","Argentina","Italy","Brazil"],ans:"Brazil",diff:"easy"},
-    {cat:"Music",q:"How many strings does a standard guitar have?",opts:["4","5","6","7"],ans:"6",diff:"easy"},
-    {cat:"Film",q:"Who directed Jurassic Park (1993)?",opts:["James Cameron","George Lucas","Steven Spielberg","Ridley Scott"],ans:"Steven Spielberg",diff:"medium"},
-    {cat:"Food",q:"Which country is the origin of sushi?",opts:["China","Korea","Japan","Thailand"],ans:"Japan",diff:"easy"},
-    {cat:"Literature",q:"Who wrote 1984?",opts:["Aldous Huxley","George Orwell","Ray Bradbury","H.G. Wells"],ans:"George Orwell",diff:"medium"},
-    {cat:"Technology",q:"What does HTTP stand for?",opts:["HyperText Transfer Protocol","High Transfer Text Program","Hyper Terminal Transfer","HyperText Transmission Path"],ans:"HyperText Transfer Protocol",diff:"medium"}
-  ];
-  qs=BANK;cur=0;sc=0;results=[];showQ();
 }
 
 function buildDots(){
   var h='';
-  for(var i=0;i<qs.length;i++){
-    var c='dot'+(i<cur?(results[i]?' ok':' no'):i===cur?' cur':'');
-    h+='<div class="'+c+'"></div>';
-  }
+  for(var i=0;i<qs.length;i++){var c=i<cur?(results[i]?' ok':' no'):i===cur?' cur':'';h+='<div class="dot'+c+'"></div>';}
   document.getElementById('qdots').innerHTML=h;
 }
 
 function showQ(){
   show('s-q');done=false;
   var q=qs[cur];
-  document.getElementById('qcnt').textContent='Question '+(cur+1)+' / '+qs.length;
+  document.getElementById('qcnt').textContent='Question '+(cur+1)+' / 10';
   document.getElementById('qcat').textContent=q.cat;
   document.getElementById('qtxt').textContent=q.q;
   document.getElementById('qfb').style.display='none';
@@ -287,8 +321,8 @@ function showQ(){
   buildDots();
   var h='';
   for(var i=0;i<q.opts.length;i++){
-    var opt=q.opts[i].replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-    h+='<button class="mc-opt" data-opt="'+opt+'" onclick="submitMC(this)">'+q.opts[i]+'</button>';
+    var o=q.opts[i].replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    h+='<button class="mc-opt" data-ans="'+o+'" onclick="submitMC(this)">'+q.opts[i]+'</button>';
   }
   document.getElementById('qarea').innerHTML=h;
   startTimer(20);
@@ -304,28 +338,21 @@ function startTimer(sec){
 
 function timeOut(){
   done=true;var q=qs[cur];
-  document.querySelectorAll('.mc-opt').forEach(function(b){b.disabled=true;if(b.getAttribute('data-opt')===q.ans)b.classList.add('ok');});
-  showFB(false,"⏰ Time's up! The answer was: "+q.ans);
-  results[cur]=false;buildDots();
-  document.getElementById('qnext').style.display='block';
+  document.querySelectorAll('.mc-opt').forEach(function(b){b.disabled=true;if(b.getAttribute('data-ans')===q.ans)b.classList.add('ok');});
+  showFB(false,'⏰ Time\'s up! The answer was: '+q.ans);
+  results[cur]=false;buildDots();document.getElementById('qnext').style.display='block';
 }
 
 function submitMC(btn){
   if(done)return;done=true;clearInterval(tiv);
-  var q=qs[cur],chosen=btn.getAttribute('data-opt'),ok=(chosen===q.ans);
-  document.querySelectorAll('.mc-opt').forEach(function(b){b.disabled=true;if(b.getAttribute('data-opt')===q.ans)b.classList.add('ok');else if(b===btn&&!ok)b.classList.add('no');});
+  var q=qs[cur],chosen=btn.getAttribute('data-ans'),ok=(chosen===q.ans);
+  document.querySelectorAll('.mc-opt').forEach(function(b){b.disabled=true;if(b.getAttribute('data-ans')===q.ans)b.classList.add('ok');else if(b===btn&&!ok)b.classList.add('no');});
   if(ok)sc++;results[cur]=ok;buildDots();
   showFB(ok,ok?'✅ Correct!':'❌ Wrong. The answer is: '+q.ans);
   document.getElementById('qnext').style.display='block';
 }
 
-function showFB(ok,msg){
-  var fb=document.getElementById('qfb');
-  fb.className='fb '+(ok?'ok':'no');
-  fb.innerHTML='<strong>'+msg+'</strong>';
-  fb.style.display='block';
-}
-
+function showFB(ok,msg){var fb=document.getElementById('qfb');fb.className='fb '+(ok?'ok':'no');fb.innerHTML='<strong>'+msg+'</strong>';fb.style.display='block';}
 function nextQ(){cur++;if(cur>=qs.length)showRes();else showQ();}
 
 function verdict(s){
@@ -339,6 +366,7 @@ function verdict(s){
 function showRes(){
   clearInterval(tiv);show('s-res');
   var v=verdict(sc);
+  var timeTaken=Math.round((Date.now()-weekStart)/1000);
   document.getElementById('res-emoji').textContent=v.e;
   document.getElementById('res-name').textContent=playerName;
   document.getElementById('fscore').textContent=sc+' / 10';
@@ -346,23 +374,24 @@ function showRes(){
   document.getElementById('rw').textContent=10-sc;
   document.getElementById('rv').textContent=v.r;
   document.getElementById('res-verdict').textContent=v.t;
-  saveScore();
+  saveScore(timeTaken);
 }
 
-async function saveScore(){
+async function saveScore(timeTaken){
   var status=document.getElementById('save-status');
-  status.textContent='Saving…';
+  status.textContent='Saving your score…';
+  var wk=getWeekKey();
+  var entry={name:playerName,score:sc,time:timeTaken,week:wk};
   try{
-    var wk=getWeekKey();
-    // Save week score
-    await fetch(fb('weeks/'+wk+'/scores/'+safeName),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:playerName,score:sc,week:wk})});
-    // Update all-time
+    await fetch(fb('weeks/'+wk+'/scores/'+safeName),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(entry)});
     var ar=await fetch(fb('alltime/'+safeName));
     var aEx=await ar.json();
-    var aBest=aEx?aEx.score:0;
-    if(sc>=aBest) await fetch(fb('alltime/'+safeName),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:playerName,score:sc})});
-    status.textContent=sc>aBest?'⭐ New personal best saved!':'✓ Score saved to leaderboard.';
-  }catch(e){status.textContent='⚠️ Score saved locally (Firebase not connected).';}
+    if(!aEx||sc>aEx.score||(sc===aEx.score&&timeTaken<aEx.time))
+      await fetch(fb('alltime/'+safeName),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:playerName,score:sc,time:timeTaken})});
+    status.textContent='✅ Score saved! Check the leaderboard on the office screen.';
+  }catch(e){
+    status.textContent='⚠️ Could not reach the server. Ask IT to check Firebase.';
+  }
 }
 </script>
 </body>
