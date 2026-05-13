@@ -10,7 +10,7 @@
 html,body{height:100%;overflow:hidden;}
 body{font-family:'Poppins',system-ui,sans-serif;background:#fdf8ee;color:#2a0a0a;}
 
-#app{display:grid;grid-template-columns:1fr 340px;height:100vh;}
+#app{display:grid;grid-template-columns:1fr 420px;height:100vh;}
 
 /* Decorative background */
 .bg-deco{position:fixed;inset:0;z-index:0;pointer-events:none;}
@@ -104,7 +104,7 @@ body{font-family:'Poppins',system-ui,sans-serif;background:#fdf8ee;color:#2a0a0a
     <div class="header">
       <div>
         <div class="logo-title">Hawaiian</div>
-        <div class="logo-sub">POKE BOWL · Office Quiz Leaderboard</div>
+        <div class="logo-sub">Support Office Quiz</div>
       </div>
       <div class="week-pill" id="week-pill">Loading…</div>
     </div>
@@ -159,7 +159,7 @@ body{font-family:'Poppins',system-ui,sans-serif;background:#fdf8ee;color:#2a0a0a
 <script>
 // ══════════════════════════════════════════════════
 var FIREBASE='https://hpb-so-quiz-default-rtdb.europe-west1.firebasedatabase.app';
-var QUIZ_URL='https://digital-hawaiian.github.io/Support-Office/quiz.html';
+var QUIZ_URL='https://digital-hawaiian.github.io/Support-Office/quiz';
 // ══════════════════════════════════════════════════
 
 function getWeekKey(){var n=new Date(),j=new Date(n.getFullYear(),0,1),w=Math.ceil(((n-j)/86400000+j.getDay()+1)/7);return 'w'+n.getFullYear()+'-'+String(w).padStart(2,'0');}
