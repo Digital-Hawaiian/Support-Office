@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Hawaiian Knowledge Quiz</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+:root{
+  --bg:#f7f5ef;--card:#ffffff;--ink:#161311;--ink-soft:#665f52;--muted:#a89f8c;
+  --line:#e6e0d2;--accent:#c8460e;--accent-dark:#9c360a;--accent-soft:#fbe7da;
+  --good:#1f7a43;--good-bg:#e8f5ec;--good-line:#b7dfc4;
+  --bad:#c0392b;--bad-bg:#fdecea;--bad-line:#f5b7b1;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+
+/* Decorative background */
+.bg-deco{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.bg-deco svg{position:absolute;bottom:0;left:0;width:100%;opacity:0.05;}
+
+.wrap{position:relative;z-index:1;padding:1.25rem;max-width:480px;margin:0 auto;}
+
+/* Logo */
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;padding-top:0.5rem;}
+.logo-img{height:36px;}
+.logo-title{font-size:19px;font-weight:900;color:var(--ink);letter-spacing:-0.5px;text-transform:lowercase;}
+.logo-sub{font-size:11px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;}
+
+/* Screens */
+.screen{display:none;}
+.screen.active{display:block;}
+
+/* Cards */
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:1.5rem;margin-bottom:1rem;box-shadow:0 2px 16px rgba(20,15,5,0.05);}
+
+/* Buttons */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;font-size:14px;font-weight:700;border:none;border-radius:999px;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.18s;letter-spacing:0.04em;text-transform:uppercase;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:var(--accent-dark);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink);}
+.btn-ghost:hover{background:var(--ink);color:var(--bg);}
+
+/* Input */
+.inp{width:100%;padding:13px 16px;font-size:15px;border:1.5px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);outline:none;font-family:'Poppins',sans-serif;transition:border-color 0.2s;}
+.inp:focus{border-color:var(--ink);background:#fff;}
+.inp::placeholder{color:var(--muted);}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:4px 12px;border-radius:999px;font-weight:600;background:var(--card);color:var(--ink-soft);border:1px solid var(--line);}
+.badge-brown{}
+.badge-green{}
+.badge-warm{}
+
+/* Timer */
+.tbar{height:6px;background:var(--line);border-radius:3px;margin-bottom:1.25rem;overflow:hidden;}
+.tfill{height:100%;border-radius:3px;background:var(--accent);transition:width 1s linear;}
+.tfill.low{background:var(--bad);}
+
+/* Progress dots */
+.dots{display:flex;gap:5px;justify-content:center;margin-bottom:1rem;flex-wrap:wrap;}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--line);}
+.dot.ok{background:var(--good);}
+.dot.no{background:var(--bad);}
+.dot.cur{background:var(--accent);box-shadow:0 0 0 3px rgba(200,70,14,0.2);}
+
+/* MC options */
+.mc-opt{width:100%;text-align:left;padding:12px 16px;font-size:14px;font-weight:500;border:1.5px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);cursor:pointer;margin-bottom:8px;transition:all 0.15s;font-family:'Poppins',sans-serif;line-height:1.4;}
+.mc-opt:hover:not(:disabled){border-color:var(--ink);background:var(--bg);}
+.mc-opt.ok{background:var(--good-bg);border-color:var(--good);color:#123d24;}
+.mc-opt.no{background:var(--bad-bg);border-color:var(--bad);color:#7b1a14;}
+.mc-opt:disabled{cursor:default;}
+
+/* Feedback */
+.fb{margin-top:0.75rem;padding:12px 16px;border-radius:14px;font-size:13px;line-height:1.6;}
+.fb.ok{background:var(--good-bg);border:1px solid var(--good-line);color:#123d24;}
+.fb.no{background:var(--bad-bg);border:1px solid var(--bad-line);color:#7b1a14;}
+
+/* Score */
+.score-big{font-size:64px;font-weight:900;text-align:center;color:var(--ink);margin:0.5rem 0;}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem;}
+.stat{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:0.75rem;text-align:center;}
+.stat-val{font-size:20px;font-weight:700;color:var(--ink);}
+.stat-lbl{font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:0.05em;}
+
+.pill-row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:0.75rem 0 1.25rem;}
+.err{color:var(--bad);font-size:13px;margin-top:6px;display:none;}
+.loading-txt{text-align:center;padding:4rem 0;color:var(--muted);font-size:14px;}
+.hero{text-align:center;padding:1.25rem 0 0.75rem;}
+.hero h1{font-size:26px;font-weight:900;color:var(--ink);margin-bottom:0.4rem;text-transform:uppercase;letter-spacing:-0.01em;line-height:1.15;}
+.hero p{font-size:13px;color:var(--ink-soft);line-height:1.7;}
+</style>
+</head>
+<body>
+
+<!-- Background decoration -->
+<div class="bg-deco">
+  <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20,280 Q80,200 60,120 Q40,40 120,20 Q160,10 140,80 Q120,150 180,160 Q240,170 220,240 Q200,300 20,280Z" fill="#c8460e"/>
+    <path d="M300,290 Q360,220 340,140 Q320,60 380,30 Q400,20 395,90 Q390,160 350,180 Q310,200 320,260 Q330,300 300,290Z" fill="#c8460e"/>
+    <circle cx="200" cy="30" r="60" fill="#c8460e" opacity="0.5"/>
+  </svg>
+</div>
+
+<div class="wrap">
+  <!-- LOGO -->
+  <div class="logo">
+    <div>
+      <div class="logo-title">hawaiian</div>
+      <div class="logo-sub">Knowledge Quiz</div>
+    </div>
+  </div>
+
+  <!-- NAME SCREEN -->
+  <div class="screen active" id="s-name">
+    <div class="hero">
+      <div style="font-size:52px;margin-bottom:0.5rem;">🏆</div>
+      <h1>Who's the Smartest?</h1>
+      <p>Everyone plays the same <span class="qpw">15</span> questions.<br>Best score wins the weekly trophy!</p>
+    </div>
+    <div class="pill-row">
+      <span class="badge badge-brown">🌍 Same questions for all</span>
+      <span class="badge badge-green">🔒 1× per week</span>
+      <span class="badge badge-warm">⏱️ 20s per question</span>
+    </div>
+    <div class="card">
+      <label style="font-size:11px;color:var(--muted);font-weight:700;display:block;margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em;">Your name</label>
+      <input class="inp" id="nameInp" type="text" placeholder="Enter your name…" maxlength="30"/>
+      <div class="err" id="name-err">Please enter your name first.</div>
+      <button class="btn btn-primary" onclick="goStart()" style="margin-top:12px;">🎯 Start Quiz</button>
+    </div>
+  </div>
+
+  <!-- ALREADY PLAYED -->
+  <div class="screen" id="s-played">
+    <div class="card" style="text-align:center;padding:2rem;">
+      <div style="font-size:52px;margin-bottom:0.75rem;">🔒</div>
+      <h2 style="font-size:18px;font-weight:700;margin-bottom:0.5rem;color:var(--ink);">Already played this week!</h2>
+      <p style="font-size:13px;color:var(--ink-soft);margin-bottom:1.5rem;">You can play again next Monday.<br>Check the office screen to see your ranking!</p>
+      <div style="background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:1.25rem;margin-bottom:1rem;">
+        <div style="font-size:11px;color:var(--ink-soft);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;font-weight:600;">Your score this week</div>
+        <div style="font-size:48px;font-weight:900;color:var(--ink);" id="played-score">—</div>
+        <div style="font-size:12px;color:var(--ink-soft);">out of <span class="qpw">15</span></div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);">🗓️ Resets every Monday</p>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="screen" id="s-load">
+    <div class="loading-txt">
+      <div style="font-size:40px;margin-bottom:1rem;">🌺</div>
+      Loading this week's questions…
+    </div>
+  </div>
+
+  <!-- QUESTION -->
+  <div class="screen" id="s-q">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;">
+      <span id="qcnt" style="font-size:12px;color:#a07850;font-weight:600;"></span>
+      <span class="badge badge-brown" id="qcat"></span>
+    </div>
+    <div class="dots" id="qdots"></div>
+    <div class="tbar"><div class="tfill" id="tfill" style="width:100%"></div></div>
+    <div class="card">
+      <p id="qtxt" style="font-size:15px;font-weight:600;color:#2a0a0a;margin-bottom:0.75rem;line-height:1.5;"></p>
+      <div id="qarea"></div>
+      <div id="qfb" class="fb" style="display:none;"></div>
+    </div>
+    <div id="qnext" style="display:none;">
+      <button class="btn btn-ghost" onclick="nextQ()">Next question →</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="screen" id="s-res">
+    <div class="card" style="text-align:center;padding:2rem 1.5rem;">
+      <div id="res-emoji" style="font-size:48px;margin-bottom:0.5rem;"></div>
+      <p style="font-size:13px;color:var(--ink-soft);margin-bottom:0.25rem;">Well done, <strong id="res-name" style="color:var(--ink);"></strong>!</p>
+      <div class="score-big" id="fscore"></div>
+      <p id="res-verdict" style="font-size:13px;color:var(--ink-soft);margin-bottom:1.25rem;"></p>
+      <div class="stats">
+        <div class="stat"><div class="stat-val" style="color:var(--good);" id="rc"></div><div class="stat-lbl">Correct</div></div>
+        <div class="stat"><div class="stat-val" style="color:var(--bad);" id="rw"></div><div class="stat-lbl">Wrong</div></div>
+        <div class="stat"><div class="stat-val" style="color:var(--accent);" id="rv"></div><div class="stat-lbl">Rating</div></div>
+      </div>
+      <div id="save-status" style="font-size:12px;color:var(--ink-soft);margin-bottom:1rem;min-height:20px;"></div>
+      <div style="background:var(--bg);border-radius:12px;padding:0.75rem;font-size:12px;color:var(--ink-soft);line-height:1.8;">
+        📺 Check the office screen for the leaderboard!<br>
+        🔒 You can play again next Monday.
+      </div>
+    </div>
+  </div>
+
+</div>
+<script>
+// ══════════════════════════════════════════════════════════════
+// STEP 5 OF THE SETUP GUIDE: paste your own Firebase Realtime
+// Database URL below, replacing the placeholder. It looks like:
+//   https://YOUR-PROJECT-default-rtdb.REGION.firebasedatabase.app
+var FIREBASE='REPLACE_WITH_YOUR_FIREBASE_DATABASE_URL';
+// How many questions per week. Change here AND in the matching
+// constant in screen.html if you ever adjust this.
+var QUESTIONS_PER_WEEK=15;
+// Fixed Monday reference point used only to pick which block of the
+// question pool is served this week (does NOT affect score storage,
+// which still uses the ISO week key below).
+var ROTATION_EPOCH_MS=Date.UTC(2024,0,1);
+// ══════════════════════════════════════════════════════════════
+
+// ── Offline fallback question bank (used only if the synced Coda/Firebase
+//    question bank at quiz/bank can't be reached — keeps the quiz playable
+//    even if Firebase is briefly down or not configured yet) ──
+var BANK=[
+  {cat:"Science",q:"What is the chemical symbol for gold?",opts:["Go","Gd","Au","Ag"],ans:"Au"},
+  {cat:"Science",q:"How many bones does an adult human body have?",opts:["186","206","226","246"],ans:"206"},
+  {cat:"Science",q:"What planet is closest to the Sun?",opts:["Venus","Earth","Mars","Mercury"],ans:"Mercury"},
+  {cat:"Science",q:"What gas do plants absorb from the air?",opts:["Oxygen","Nitrogen","Carbon dioxide","Hydrogen"],ans:"Carbon dioxide"},
+  {cat:"Science",q:"How many chambers does a human heart have?",opts:["2","3","4","5"],ans:"4"},
+  {cat:"History",q:"In which year did World War II end?",opts:["1943","1944","1945","1946"],ans:"1945"},
+  {cat:"History",q:"Who was the first person to walk on the Moon?",opts:["Buzz Aldrin","Yuri Gagarin","Neil Armstrong","John Glenn"],ans:"Neil Armstrong"},
+  {cat:"History",q:"Who painted the Mona Lisa?",opts:["Michelangelo","Raphael","Leonardo da Vinci","Caravaggio"],ans:"Leonardo da Vinci"},
+  {cat:"Geography",q:"What is the capital of Australia?",opts:["Sydney","Melbourne","Brisbane","Canberra"],ans:"Canberra"},
+  {cat:"Geography",q:"What is the smallest country in the world?",opts:["Monaco","San Marino","Liechtenstein","Vatican City"],ans:"Vatican City"},
+  {cat:"Geography",q:"What is the capital of Japan?",opts:["Osaka","Kyoto","Tokyo","Hiroshima"],ans:"Tokyo"},
+  {cat:"Sport",q:"How many players are on a soccer team on the field?",opts:["9","10","11","12"],ans:"11"},
+  {cat:"Sport",q:"How many Grand Slam tennis tournaments are there per year?",opts:["2","3","4","5"],ans:"4"},
+  {cat:"Music",q:"How many strings does a standard guitar have?",opts:["4","5","6","7"],ans:"6"},
+  {cat:"Music",q:"Which band released the album 'Abbey Road'?",opts:["The Rolling Stones","The Beatles","Led Zeppelin","Pink Floyd"],ans:"The Beatles"},
+  {cat:"Food",q:"Which country is the origin of sushi?",opts:["China","Korea","Thailand","Japan"],ans:"Japan"},
+  {cat:"Food",q:"What is the main ingredient in guacamole?",opts:["Tomato","Avocado","Mango","Lime"],ans:"Avocado"},
+  {cat:"Technology",q:"Which company created Android?",opts:["Apple","Microsoft","Google","Samsung"],ans:"Google"},
+  {cat:"Nature",q:"What is the largest mammal in the world?",opts:["African Elephant","Sperm Whale","Giant Squid","Blue Whale"],ans:"Blue Whale"},
+  {cat:"Nature",q:"How many legs does a spider have?",opts:["6","8","10","12"],ans:"8"},
+];
+
+var qs=[],cur=0,sc=0,results=[],tiv=null,tl=0,done=false,playerName='',safeName='',weekStart=0;
+
+function getWeekKey(){var n=new Date(),j=new Date(n.getFullYear(),0,1),w=Math.ceil(((n-j)/86400000+j.getDay()+1)/7);return 'w'+n.getFullYear()+'-'+String(w).padStart(2,'0');}
+function show(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById(id).classList.add('active');}
+function safe(n){return n.toLowerCase().replace(/[^a-z0-9]/g,'_');}
+function fb(path){return FIREBASE+'/quiz/'+path+'.json';}
+
+// Seeded shuffle — same result for same week seed
+function seededShuffle(arr,seed){
+  var a=arr.slice();
+  for(var i=a.length-1;i>0;i--){seed=(seed*9301+49297)%233280;var j=Math.floor((seed/233280)*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}
+  return a;
+}
+
+function getWeekSeed(wk){return wk.split('').reduce(function(a,c){return a+c.charCodeAt(0);},0)*137;}
+
+// Absolute week counter since a fixed Monday, used only for rotating
+// through the question pool without repeats. Unlike the ISO week-of-year
+// key above, this never resets at New Year, so the rotation keeps moving
+// forward correctly across year boundaries.
+function getGlobalWeekIndex(){
+  return Math.floor((Date.now()-ROTATION_EPOCH_MS)/(7*24*3600*1000));
+}
+
+// Fetch the full question pool synced from Coda into Firebase
+// (see sync-coda-to-firebase.js). Falls back to the small offline BANK
+// above if Firebase is unreachable or the synced bank is too small.
+async function loadPool(){
+  try{
+    var r=await fetch(fb('bank'));
+    var raw=await r.json();
+    if(raw){
+      var arr=Array.isArray(raw)?raw.filter(Boolean):Object.values(raw);
+      if(arr.length>=QUESTIONS_PER_WEEK)return arr;
+    }
+  }catch(e){}
+  return BANK;
+}
+
+// Pick this week's block of QUESTIONS_PER_WEEK questions out of the full
+// pool so that every question in the pool gets used exactly once before
+// any question repeats. Every "numBlocks" weeks (a full cycle through the
+// pool) the pool order is reshuffled so the specific groupings change too.
+function pickWeekQuestions(pool){
+  var blockSize=QUESTIONS_PER_WEEK;
+  var numBlocks=Math.max(1,Math.floor(pool.length/blockSize));
+  var gIdx=getGlobalWeekIndex();
+  var cycle=Math.floor(gIdx/numBlocks);
+  var blockIdx=gIdx%numBlocks;
+  var shuffledPool=seededShuffle(pool,cycle+1);
+  var start=blockIdx*blockSize;
+  return shuffledPool.slice(start,start+blockSize);
+}
+
+function applyQuestionsPerWeekLabels(){
+  document.querySelectorAll('.qpw').forEach(function(el){el.textContent=QUESTIONS_PER_WEEK;});
+}
+applyQuestionsPerWeekLabels();
+
+document.getElementById('nameInp').addEventListener('keydown',function(e){if(e.key==='Enter')goStart();});
+
+async function goStart(){
+  var n=document.getElementById('nameInp').value.trim();
+  if(!n){document.getElementById('name-err').style.display='block';return;}
+  document.getElementById('name-err').style.display='none';
+  playerName=n;safeName=safe(n);
+  show('s-load');
+  var wk=getWeekKey();
+  try{
+    // Check if already played
+    var pr=await fetch(fb('weeks/'+wk+'/scores/'+safeName));
+    var existing=await pr.json();
+    if(existing!==null){
+      document.getElementById('played-score').textContent=existing.score;
+      show('s-played');return;
+    }
+    // Load the full question pool and pick this week's non-repeating block
+    var pool=await loadPool();
+    var weekPicks=pickWeekQuestions(pool);
+    var seed=getWeekSeed(wk);
+    // Shuffle each question's own options with the weekly seed so every
+    // player sees the same set in the same order this week.
+    qs=weekPicks.map(function(q,i){
+      var s2=seed+(i*31);
+      return Object.assign({},q,{opts:seededShuffle(q.opts,s2)});
+    });
+    cur=0;sc=0;results=[];
+    weekStart=Date.now();
+    showQ();
+  }catch(e){
+    // Firebase not reachable at all — still play using the offline bank
+    var seed2=getWeekSeed(wk);
+    var shuffled2=seededShuffle(BANK,seed2);
+    qs=shuffled2.slice(0,QUESTIONS_PER_WEEK);
+    qs=qs.map(function(q,i){var s2=seed2+(i*31);return Object.assign({},q,{opts:seededShuffle(q.opts,s2)});});
+    cur=0;sc=0;results=[];weekStart=Date.now();
+    showQ();
+  }
+}
+
+function buildDots(){
+  var h='';
+  for(var i=0;i<qs.length;i++){var c=i<cur?(results[i]?' ok':' no'):i===cur?' cur':'';h+='<div class="dot'+c+'"></div>';}
+  document.getElementById('qdots').innerHTML=h;
+}
+
+function showQ(){
+  show('s-q');done=false;
+  var q=qs[cur];
+  document.getElementById('qcnt').textContent='Question '+(cur+1)+' / '+qs.length;
+  document.getElementById('qcat').textContent=q.cat;
+  document.getElementById('qtxt').textContent=q.q;
+  document.getElementById('qfb').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  buildDots();
+  var h='';
+  for(var i=0;i<q.opts.length;i++){
+    var o=q.opts[i].replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    h+='<button class="mc-opt" data-ans="'+o+'" onclick="submitMC(this)">'+q.opts[i]+'</button>';
+  }
+  document.getElementById('qarea').innerHTML=h;
+  startTimer(20);
+}
+
+function startTimer(sec){
+  clearInterval(tiv);tl=sec;
+  var f=document.getElementById('tfill');
+  f.className='tfill';f.style.transition='none';f.style.width='100%';
+  setTimeout(function(){f.style.transition='width '+sec+'s linear';f.style.width='0%';},50);
+  tiv=setInterval(function(){tl--;if(tl<=5)f.className='tfill low';if(tl<=0){clearInterval(tiv);if(!done)timeOut();}},1000);
+}
+
+function timeOut(){
+  done=true;var q=qs[cur];
+  document.querySelectorAll('.mc-opt').forEach(function(b){b.disabled=true;if(b.getAttribute('data-ans')===q.ans)b.classList.add('ok');});
+  showFB(false,'⏰ Time\'s up! The answer was: '+q.ans);
+  results[cur]=false;buildDots();document.getElementById('qnext').style.display='block';
+}
+
+function submitMC(btn){
+  if(done)return;done=true;clearInterval(tiv);
+  var q=qs[cur],chosen=btn.getAttribute('data-ans'),ok=(chosen===q.ans);
+  document.querySelectorAll('.mc-opt').forEach(function(b){b.disabled=true;if(b.getAttribute('data-ans')===q.ans)b.classList.add('ok');else if(b===btn&&!ok)b.classList.add('no');});
+  if(ok)sc++;results[cur]=ok;buildDots();
+  showFB(ok,ok?'✅ Correct!':'❌ Wrong. The answer is: '+q.ans);
+  document.getElementById('qnext').style.display='block';
+}
+
+function showFB(ok,msg){var fb=document.getElementById('qfb');fb.className='fb '+(ok?'ok':'no');fb.innerHTML='<strong>'+msg+'</strong>';fb.style.display='block';}
+function nextQ(){cur++;if(cur>=qs.length)showRes();else showQ();}
+
+function verdict(s){
+  var pct=s/QUESTIONS_PER_WEEK;
+  if(pct>=1)return{e:'🏆',t:'Perfect score!',r:'Genius'};
+  if(pct>=0.8)return{e:'🌟',t:'Outstanding!',r:'Excellent'};
+  if(pct>=0.6)return{e:'🎯',t:'Great job!',r:'Good'};
+  if(pct>=0.4)return{e:'📚',t:'Not bad!',r:'Average'};
+  return{e:'🔄',t:'Keep practising!',r:'Try again'};
+}
+
+function showRes(){
+  clearInterval(tiv);show('s-res');
+  var v=verdict(sc);
+  var timeTaken=Math.round((Date.now()-weekStart)/1000);
+  document.getElementById('res-emoji').textContent=v.e;
+  document.getElementById('res-name').textContent=playerName;
+  document.getElementById('fscore').textContent=sc+' / '+qs.length;
+  document.getElementById('rc').textContent=sc;
+  document.getElementById('rw').textContent=qs.length-sc;
+  document.getElementById('rv').textContent=v.r;
+  document.getElementById('res-verdict').textContent=v.t;
+  saveScore(timeTaken);
+}
+
+async function saveScore(timeTaken){
+  var status=document.getElementById('save-status');
+  status.textContent='Saving your score…';
+  var wk=getWeekKey();
+  var entry={name:playerName,score:sc,time:timeTaken,week:wk};
+  try{
+    await fetch(fb('weeks/'+wk+'/scores/'+safeName),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(entry)});
+    var ar=await fetch(fb('alltime/'+safeName));
+    var aEx=await ar.json();
+    if(!aEx||sc>aEx.score||(sc===aEx.score&&timeTaken<aEx.time))
+      await fetch(fb('alltime/'+safeName),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:playerName,score:sc,time:timeTaken})});
+    status.textContent='✅ Score saved! Check the leaderboard on the office screen.';
+  }catch(e){
+    status.textContent='⚠️ Could not reach the server. Ask IT to check Firebase.';
+  }
+}
+</script>
+</body>
+</html>
